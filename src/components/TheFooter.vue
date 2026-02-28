@@ -21,7 +21,7 @@
     </div>
 
     <!-- Sponsorship Section (Grid with White Squares) -->
-    <div class="sponsorship-section">
+    <div class="sponsorship-section" v-show="false">
       <div class="container lg-container">
         <div class="sponsorship-content">
           <div class="sponsorship-info">
@@ -114,7 +114,9 @@ const primaryPartners = [
   {
     title: 'OFFICIAL TICKETING',
     logos: ['/offcial tiketing/DECK - KOLEKTIX 2027 (5).png']
-  },
+  }
+  /*
+  ,
   {
     title: 'STRATEGIC PARTNER',
     logos: [
@@ -132,6 +134,7 @@ const primaryPartners = [
       '/official production partner/the jeblogs-silaturahmi (7).png'
     ]
   }
+  */
 ]
 
 const sponsorsLogos = [
@@ -354,8 +357,9 @@ const sponsorsLogos = [
 @media (max-width: 1024px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .partners-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 2rem;
   }
 }
@@ -367,8 +371,10 @@ const sponsorsLogos = [
   .sponsorship-title { font-size: 1.8rem; margin-bottom: 2rem; }
   
   .partners-bar {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
     padding: 1.5rem;
   }
 
