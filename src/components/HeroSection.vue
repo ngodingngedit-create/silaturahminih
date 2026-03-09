@@ -5,9 +5,14 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const slides = [
-  '/konser1.jpg',
-  '/konser2.jpg',
-  '/konser3.jpg',
+  '/foot looping beranda/HRS00841.jpg',
+  '/foot looping beranda/HRS01545.jpg',
+  '/foot looping beranda/HRS01879.jpg',
+  '/foot looping beranda/HRS02450.jpg',
+  '/foot looping beranda/HRS00699.jpg',
+  '/foot looping beranda/HRS05245.jpg',
+  '/foot looping beranda/HRS07279.jpg',
+  '/foot looping beranda/HRS02460.jpg',
 ]
 
 const currentSlide = ref(0)
@@ -42,7 +47,7 @@ onUnmounted(() => stopAutoplay())
         :key="index"
         class="slide"
         :class="{ active: index === currentSlide }"
-        :style="{ backgroundImage: `url(${slide})` }"
+        :style="{ backgroundImage: `url('${slide}')` }"
       ></div>
       <div class="hero-bg-pattern"></div>
     </div>
@@ -57,8 +62,8 @@ onUnmounted(() => stopAutoplay())
         <div class="info-block">
           <h2 class="hero-date">COMING SOON VOL 3</h2>
           <span class="event-year">2027</span>
-          <p class="hero-venue">PAMULANG SQUARE, TANGERANG SELATAN</p>
-          <div class="hero-slogan">"SEMUA AKAN PUNK PADA WAKTUNYA"</div>
+          <p class="hero-venue">TO BE ANNOUNCED</p>
+          <div class="hero-slogan">"TAGLINE TBA"</div>
         </div>
 
         <div class="hero-actions">

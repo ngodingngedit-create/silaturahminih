@@ -8,49 +8,55 @@
       
       <div class="ticket-grid">
         <!-- Card 1 -->
-        <div class="ticket-card sold-out">
+        <div class="ticket-card">
           <div class="card-header">
             <h3>EARLY BIRD</h3>
-            <span class="status">SOLD OUT</span>
           </div>
           <div class="card-body">
-            <p class="price">Rp 75.000</p>
+            <p class="price">TBA</p>
             <ul class="features">
-              <li>Tiket Masuk</li>
-              <li>Sticker Pack</li>
             </ul>
           </div>
-          <button class="btn" disabled>Habis</button>
+          <button class="btn" disabled>Akan Datang</button>
         </div>
 
         <!-- Card 2 -->
-        <div class="ticket-card featured">
+        <div class="ticket-card">
           <div class="card-header bg-pink">
-            <h3>PRESALE</h3>
-            <span class="status">ON SALE!</span>
+            <h3>PRESALE 1</h3>
           </div>
           <div class="card-body">
-            <p class="price">Rp 100.000</p>
+            <p class="price">TBA</p>
             <ul class="features">
-              <li>Tiket Masuk</li>
-              <li>Sticker Pack</li>
             </ul>
           </div>
-          <a href="https://kolektix.com/event/silaturahmi" target="_blank" class="btn btn-green">Beli Sekarang</a>
+          <button class="btn" disabled>Akan Datang</button>
         </div>
 
         <!-- Card 3 -->
         <div class="ticket-card">
           <div class="card-header bg-green">
-            <h3>ON THE SPOT</h3>
+            <h3>PRESALE 2</h3>
           </div>
           <div class="card-body">
-            <p class="price">Rp 150.000</p>
+            <p class="price">TBA</p>
             <ul class="features">
-              <li>Tiket Masuk</li>
             </ul>
           </div>
-          <button class="btn btn-white">Akan Datang</button>
+          <button class="btn" disabled>Akan Datang</button>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="ticket-card">
+          <div class="card-header bg-pink">
+            <h3>REGULER</h3>
+          </div>
+          <div class="card-body">
+            <p class="price">TBA</p>
+            <ul class="features">
+            </ul>
+          </div>
+          <button class="btn" disabled>Akan Datang</button>
         </div>
       </div>
     </div>

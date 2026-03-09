@@ -5,26 +5,35 @@ const tickets = [
     name: 'EARLY BIRD',
     price: 'TBA',
     status: 'upcoming',
-    statusLabel: 'SOON',
+    statusLabel: 'TBA',
     color: 'yellow',
     features: ['Tiket Masuk', 'Sticker Pack Eksklusif'],
     link: null,
   },
   {
-    name: 'PRESALE',
+    name: 'PRESALE 1',
     price: 'TBA',
     status: 'upcoming',
-    statusLabel: 'SOON',
+    statusLabel: 'TBA',
     color: 'pink',
     features: ['Tiket Masuk', 'Sticker Pack', 'Priority Queue'],
     link: null,
   },
   {
-    name: 'ON THE SPOT',
+    name: 'PRESALE 2',
     price: 'TBA',
     status: 'upcoming',
-    statusLabel: 'COMING SOON',
+    statusLabel: 'TBA',
     color: 'green',
+    features: ['Tiket Masuk'],
+    link: null,
+  },
+  {
+    name: 'REGULER',
+    price: 'TBA',
+    status: 'upcoming',
+    statusLabel: 'TBA',
+    color: 'yellow',
     features: ['Tiket Masuk'],
     link: null,
   },
@@ -96,7 +105,7 @@ const tickets = [
               HABIS
             </button>
             <button v-else class="btn btn-outline-dark">
-              TERSEDIA DI LOKASI
+              BUY TICKET
             </button>
           </div>
         </div>
@@ -110,17 +119,17 @@ const tickets = [
       <div class="info-strip">
         <div class="info-item">
           <span class="info-label">TANGGAL</span>
-          <span class="info-value">COMING SOON</span>
+          <span class="info-value">TBA</span>
         </div>
         <div class="info-divider"></div>
         <div class="info-item">
           <span class="info-label">LOKASI</span>
-          <span class="info-value">PAMULANG SQUARE</span>
+          <span class="info-value">TBA</span>
         </div>
         <div class="info-divider"></div>
         <div class="info-item">
           <span class="info-label">TIKET VIA</span>
-          <span class="info-value">KOLEKTIX</span>
+          <span class="info-value">KOLEKTIX.COM</span>
         </div>
       </div>
     </div>
@@ -133,19 +142,19 @@ const tickets = [
       <div class="faq-list">
         <div class="faq-item">
           <div class="faq-q">Apakah tiket bisa refund?</div>
-          <div class="faq-a">Tidak bisa. Semua penjualan bersifat final.</div>
+          <div class="faq-a">TBA</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Apa yang perlu dibawa saat masuk?</div>
-          <div class="faq-a">E-ticket dari Kolektix dan ID card.</div>
+          <div class="faq-a">TBA</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Ada batas usia?</div>
-          <div class="faq-a">Untuk semua umur, tapi anak di bawah 17 tahun harus didampingi orang tua/wali.</div>
+          <div class="faq-a">TBA</div>
         </div>
         <div class="faq-item">
           <div class="faq-q">Gate dibuka jam berapa?</div>
-          <div class="faq-a">Gate dibuka pukul 13.00 WIB.</div>
+          <div class="faq-a">TBA</div>
         </div>
       </div>
     </div>
@@ -210,23 +219,21 @@ const tickets = [
 
 /* ---- Tickets Section ---- */
 .tickets-section {
-  padding: 5rem 0;
+  padding: 5rem 0 2rem;
   background: var(--color-black);
 }
 
 .tickets-grid {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
 .ticket-card {
   background: var(--color-dark-surface);
   border: 1px solid rgba(255,255,255,0.1);
-  width: 280px;
-  flex-shrink: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   transition: var(--transition-normal);
@@ -397,7 +404,7 @@ const tickets = [
 /* ---- Info Technical Strip ---- */
 .ticket-info-section {
   background: var(--color-black);
-  padding: 4rem 0;
+  padding: 2rem 0;
   border-top: 1px solid rgba(255, 221, 0, 0.15);
   border-bottom: 1px solid rgba(255, 221, 0, 0.15);
 }
@@ -436,7 +443,16 @@ const tickets = [
   background: rgba(255, 221, 0, 0.1);
 }
 
+@media (max-width: 1024px) {
+  .tickets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
+  .tickets-grid {
+    grid-template-columns: 1fr;
+  }
   .ticket-info-section {
     padding: 3rem 0;
   }

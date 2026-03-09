@@ -74,7 +74,7 @@ onUnmounted(() => {
 }
 .recap-header {
   width: 100%;
-  padding-top: 5rem; /* Space at the top of the section */
+  padding-top: 1rem; /* Reduced space to bring it closer to the button above */
   margin-bottom: 2rem;
   z-index: 2;
   position: relative;
@@ -115,10 +115,29 @@ onUnmounted(() => {
 }
 @media (max-width: 768px) {
   .video-recap-wrapper {
-    height: 180vh;
+    height: auto;
+    padding-bottom: 3rem;
+  }
+  .recap-header {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
   }
   .recap-title {
     font-size: 3rem;
+  }
+  .sticky-container {
+    position: relative;
+    height: auto;
+    display: block;
+  }
+  .video-container {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    width: calc(100% - 2rem);
+    margin: 0 auto;
+    transform: none !important;
+    border-radius: 16px !important;
   }
 }
 </style>

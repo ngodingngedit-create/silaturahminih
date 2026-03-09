@@ -4,17 +4,88 @@ import MarqueeSection from '../components/MarqueeSection.vue'
 import VideoRecap from '../components/VideoRecap.vue'
 import PhotoScroll from '../components/PhotoScroll.vue'
 import SpotifySection from '../components/SpotifySection.vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 const featuredArtists = [
-  { name: 'DONGKER', genre: 'Punk', stage: 'Main Stage', image: '/konser1.jpg' },
-  { name: 'MARJINAL', genre: 'Punk Rock', stage: 'Main Stage', image: '/konser2.jpg' },
-  { name: 'THE JANSEN', genre: 'Indie Rock', stage: 'Main Stage', image: '/konser3.jpg' },
-  { name: 'THE BRANDALS', genre: 'Garage Rock', stage: 'Side Stage', image: '/konser1.jpg' },
-  { name: 'SUKATANI', genre: 'Folk Punk', stage: 'Side Stage', image: '/konser2.jpg' },
+  { name: 'DONGKER', genre: 'Punk', stage: 'Main Stage', image: '/konser1.jpg', description: 'Dongker is an Indonesian punk band making massive waves in the underground scene with their infectious fast-paced anthems.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'dongker', youtube: 'Dongker', tiktok: 'dongkerofficial' } },
+  { name: 'MARJINAL', genre: 'Punk Rock', stage: 'Main Stage', image: '/konser2.jpg', description: 'An iconic street punk band hailing from Jakarta. Marjinal is not just a band, but a movement that resonates deeply with the Indonesian working class.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'taringbabi', youtube: 'MarjinalTV', tiktok: 'marjinalpunk' } },
+  { name: 'THE JANSEN', genre: 'Indie Rock', stage: 'Main Stage', image: '/konser3.jpg', description: 'The Jansen brings a perfect blend of modern indie rock and classic punk. Their energetic performances have captured the hearts of many youths.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'thejansen_id', youtube: 'TheJansen', tiktok: 'thejansen' } },
+  { name: 'THE BRANDALS', genre: 'Garage Rock', stage: 'Side Stage', image: '/konser1.jpg', description: 'The Garage Rock revival originators in Indonesia. The Brandals are known for their reckless, dirty, and chaotic live shows.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'thebrandals', youtube: 'TheBrandalsTv', tiktok: 'thebrandals_id' } },
+  { name: 'SUKATANI', genre: 'Folk Punk', stage: 'Side Stage', image: '/konser2.jpg', description: 'Folk Punk with a local twist. Sukatani combines traditional rhythms with an unapologetic punk attitude, creating an unforgettable sonic experience.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'sukatani', youtube: 'SukataniPunk', tiktok: 'sukatani' } },
+  { name: 'LIPS', genre: 'Punk Pop', stage: 'Side Stage', image: '/konser3.jpg', description: 'Bringing melodic structures into heavy punk riffs, LIPS delivers singalong choruses that stick in your head for days.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'lipsband', youtube: 'LIPSOfficial', tiktok: 'lipspop' } },
+  { name: 'DAT BUNNY', genre: 'Noise Rock', stage: 'Side Stage', image: '/konser1.jpg', description: 'Experimental noise rock with absolutely chaotic yet highly coordinated performances. Dat Bunny pushes the boundaries of underground music.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'datbunny', youtube: 'DatBunnyNoise', tiktok: 'datbunny' } },
+  { name: 'BAXLAX BOY', genre: 'Hardcore', stage: 'Side Stage', image: '/konser2.jpg', description: 'A heavyweight in the hardcore scene. Baxlax Boy brings devastating breakdowns and aggressive grooves that incite wild moshpits.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'baxlaxboy', youtube: 'BaxlaxBoyHC', tiktok: 'baxlaxboy' } },
+  { name: 'TABRAK LARI', genre: 'Ska Punk', stage: 'Main Stage', image: '/konser3.jpg', description: 'Combining upbeat rhythms with screaming punk vocals. Tabrak Lari guarantees a skanking riot at every corner of the venue.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'tabraklari', youtube: 'TabrakLari', tiktok: 'tabraklari' } },
+  { name: 'SUKSES LANCAR REJEKI', genre: 'Punk', stage: 'Main Stage', image: '/konser1.jpg', description: 'Born in the underground clubs, Sukses Lancar Rejeki represents the purest and rawest form of modern punk rock expression.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'slr_punk', youtube: 'SLRPunk', tiktok: 'slr.punk' } }
 ]
+
+const displayArtists = [...featuredArtists, ...featuredArtists]
+
+const trackRef = ref(null)
+const isHovered = ref(false)
+let animationId = null
+let speed = 0.6 // Slower loop speed
+
+const startLoop = () => {
+  const loop = () => {
+    if (!isHovered.value && trackRef.value) {
+      trackRef.value.scrollLeft += speed
+      if (trackRef.value.scrollLeft >= trackRef.value.scrollWidth / 2) {
+        trackRef.value.scrollLeft = 0
+      }
+    }
+    animationId = requestAnimationFrame(loop)
+  }
+  animationId = requestAnimationFrame(loop)
+}
+
+onMounted(() => {
+  startLoop()
+})
+
+onBeforeUnmount(() => {
+  if (animationId) cancelAnimationFrame(animationId)
+})
+
+const handleMouseEnter = () => {
+  isHovered.value = true
+}
+
+const handleMouseLeave = () => {
+  isHovered.value = false
+}
+
+const scrollLeft = () => {
+  if (!trackRef.value) return
+  trackRef.value.scrollBy({ left: -350, behavior: 'smooth' })
+}
+
+const scrollRight = () => {
+  if (!trackRef.value) return
+  trackRef.value.scrollBy({ left: 350, behavior: 'smooth' })
+}
+
+// Modal handling
+const selectedArtist = ref(null)
+
+const openModal = (artist) => {
+  selectedArtist.value = artist
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  selectedArtist.value = null
+  document.body.style.overflow = ''
+}
+
+const getSpotifySrc = (url) => {
+  if (!url) return ''
+  const base = url.split('?')[0]
+  return `${base}?utm_source=generator&theme=0`
+}
 </script>
 
 <template>
@@ -26,37 +97,110 @@ const featuredArtists = [
 
   <!-- Lineup Teaser -->
   <section class="teaser-lineup">
+    <!-- Vol 2 -->
     <div class="container">
-      <div class="section-label">SIAPA AJA YANG MAIN?</div>
-      <h2 class="teaser-title">LINEUP <span class="accent">2027</span></h2>
-      <p class="teaser-sub">Band lokal terbaik, satu panggung. 15 Juni 2027.</p>
+      <h2 class="teaser-title">LINEUP <span class="accent">VOL 2</span></h2>
+      <p class="teaser-sub">Klik card buat lihat detailnya. Untuk Lineup Vol 1 kamu bisa liat di page Lineup.</p>
+    </div>
 
-      <div class="artist-grid">
-        <div
-          v-for="(artist, i) in featuredArtists"
-          :key="i"
-          class="artist-card"
-          @click="router.push('/lineup')"
-        >
-          <div class="artist-img-wrapper">
-            <img :src="artist.image" :alt="artist.name" class="artist-img" />
-            <div class="artist-overlay"></div>
-          </div>
-          <div class="artist-info">
-            <span class="artist-genre">{{ artist.genre }}</span>
-            <h3 class="artist-name">{{ artist.name }}</h3>
-            <span class="artist-stage">{{ artist.stage }}</span>
+    <div class="container full-bleed">
+      <div class="artist-scroller-container" 
+           @mouseenter="handleMouseEnter" 
+           @mouseleave="handleMouseLeave"
+           @touchstart="handleMouseEnter"
+           @touchend="handleMouseLeave">
+        
+        <div class="scroll-area left" :class="{ visible: isHovered }" @click.stop="scrollLeft">
+          <button class="scroll-btn">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <div class="artist-track" ref="trackRef">
+          <div
+            v-for="(artist, i) in displayArtists"
+            :key="i"
+            class="artist-card"
+            @click="openModal(artist)"
+          >
+            <div class="artist-img-wrapper">
+              <img :src="artist.image" :alt="artist.name" class="artist-img" />
+              <div class="artist-overlay"></div>
+            </div>
+            <div class="artist-info">
+              <span class="artist-genre">{{ artist.genre }}</span>
+              <h3 class="artist-name">{{ artist.name }}</h3>
+              <span class="artist-stage">{{ artist.stage }}</span>
+            </div>
           </div>
         </div>
+
+        <div class="scroll-area right" :class="{ visible: isHovered }" @click.stop="scrollRight">
+          <button class="scroll-btn">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
       </div>
+    </div>
+
+    <div class="container" style="text-align: center;">
+      <button class="btn btn-yellow" @click="router.push('/lineup')">
+        LIHAT SEMUA LINEUP →
+      </button>
+    </div>
+
+    <!-- Vol 3 TBA -->
+    <!-- <div class="container" style="margin-top: 4rem;">
+      <h2 class="teaser-title">LINEUP <span class="accent">VOL 3</span></h2>
+      <p class="teaser-sub" style="margin-bottom: 2rem;">TBA</p>
 
       <div class="teaser-cta">
         <button class="btn btn-yellow" @click="router.push('/lineup')">
-          LIHAT SEMUA LINEUP →
+          LIHAT LINEUP VOL 1 →
         </button>
       </div>
-    </div>
+    </div> -->
   </section>
+
+  <!-- Modal Artist Detail outside the section -->
+  <Transition name="fade">
+    <div v-if="selectedArtist" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <button class="close-btn" @click="closeModal">✕</button>
+        
+        <img :src="selectedArtist.image" :alt="selectedArtist.name" class="modal-img" />
+        
+        <div class="modal-body">
+          <h3 class="modal-name">{{ selectedArtist.name }}</h3>
+          <p class="modal-genre">{{ selectedArtist.genre }} | {{ selectedArtist.stage }}</p>
+          
+          <div class="modal-desc">{{ selectedArtist.description }}</div>
+          
+          <div class="modal-socials">
+            <a :href="`https://instagram.com/${selectedArtist.social.ig}`" target="_blank" class="social-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              Instagram
+            </a>
+            <a :href="`https://youtube.com/c/${selectedArtist.social.youtube}`" target="_blank" class="social-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+              YouTube
+            </a>
+            <a :href="`https://tiktok.com/@${selectedArtist.social.tiktok}`" target="_blank" class="social-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+              TikTok
+            </a>
+          </div>
+
+          <div class="modal-spotify">
+            <div class="spotify-header">
+              <span class="spotify-dot"></span> PLAYLIST
+            </div>
+            <iframe :src="getSpotifySrc(selectedArtist.spotify)" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" class="spotify-iframe"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
 
   <!-- Video Recap -->
   <VideoRecap />
@@ -75,16 +219,20 @@ const featuredArtists = [
           <div class="tt-prices">
             <div class="price-box upcoming">
               <span class="pb-label">EARLY BIRD</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-value">TBA</span>
             </div>
             <div class="price-box featured">
               <div class="popular-badge">LIMITED</div>
-              <span class="pb-label">PRESALE</span>
-              <span class="pb-value">SOON <span class="hot-icon">✨</span></span>
+              <span class="pb-label">PRESALE 1</span>
+              <span class="pb-value">TBA <span class="hot-icon">✨</span></span>
             </div>
             <div class="price-box upcoming">
-              <span class="pb-label">ON THE SPOT</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-label">PRESALE 2</span>
+              <span class="pb-value">TBA</span>
+            </div>
+            <div class="price-box upcoming-accent">
+              <span class="pb-label">REGULER</span>
+              <span class="pb-value">TBA</span>
             </div>
           </div>
 
@@ -128,8 +276,8 @@ const featuredArtists = [
     <div class="container vibe-container">
       <div class="vibe-poster">
         <div class="stencil-wrap">
-          <h2 class="vibe-quote">"SEMUA AKAN PUNK PADA WAKTUNYA"</h2>
-          <div class="stencil-shadow">"SEMUA AKAN PUNK PADA WAKTUNYA"</div>
+          <h2 class="vibe-quote">"TAGLINE TBA"</h2>
+          <div class="stencil-shadow">"TAGLINE TBA"</div>
         </div>
         
         <div class="vibe-actions">
@@ -193,14 +341,92 @@ section {
   background: var(--color-black);
 }
 
-.artist-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+.full-bleed {
+  margin: 0;
+  max-width: 100%;
+}
+
+.artist-scroller-container {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0 3rem;
+}
+
+.artist-track {
+  display: flex;
   gap: 2rem;
-  margin-bottom: var(--spacing-lg);
+  overflow-x: auto;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 1rem; /* Allows hover zoom without cropping */
+}
+
+.artist-track::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-area {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 180px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scroll-area.left {
+  left: 0;
+  /* #18181B is rgb(24, 24, 27) */
+  background: linear-gradient(to right, rgba(24,24,27,1) 15%, rgba(24,24,27,0) 100%);
+  justify-content: flex-start;
+  padding-left: 1.5rem;
+}
+
+.scroll-area.right {
+  right: 0;
+  background: linear-gradient(to left, rgba(24,24,27,1) 15%, rgba(24,24,27,0) 100%);
+  justify-content: flex-end;
+  padding-right: 1.5rem;
+}
+
+.scroll-area.visible {
+  opacity: 1;
+}
+
+.scroll-btn {
+  background: var(--color-primary);
+  color: var(--color-black);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none; /* Let the scroll-area handle the click entirely */
+  transform: scale(0.8);
+  opacity: 0.8;
+}
+
+.scroll-area.visible .scroll-btn {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scroll-area:hover .scroll-btn {
+  transform: scale(1.15);
+  box-shadow: 0 8px 25px rgba(255, 221, 0, 0.4);
 }
 
 .artist-card {
+  flex: 0 0 300px;
   background: var(--color-dark-surface);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
@@ -352,9 +578,9 @@ section {
 }
 
 .tt-prices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
   margin: 3rem 0;
 }
 
@@ -443,6 +669,11 @@ section {
 
 .price-box.upcoming {
   border: 1px dashed rgba(255,255,255,0.15);
+}
+
+.price-box.upcoming-accent {
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-left: 4px solid var(--color-primary);
 }
 
 .pb-label {
@@ -550,7 +781,7 @@ section {
 
 /* ---- Vibe Section Redesign: Street Poster ---- */
 .vibe-section {
-  background: var(--color-tertiary);
+  background: #fbda01;
   position: relative;
   overflow: hidden;
   padding: 8rem 0;
@@ -702,7 +933,176 @@ section {
   }
 }
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--color-dark-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  scrollbar-width: thin;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.modal-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-name {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--color-white);
+  margin-bottom: 0.2rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.modal-genre {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.modal-desc {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.modal-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.social-link {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--color-white);
+  text-decoration: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-link:hover {
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.modal-spotify {
+  margin-top: 2rem;
+  background: #18181b; /* match page bg or slightly darker */
+  border-radius: 12px;
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spotify-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--color-white);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+}
+
+.spotify-dot {
+  width: 8px;
+  height: 8px;
+  background: #1DB954;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(29, 185, 84, 0.8);
+}
+
+.spotify-iframe {
+  border-radius: 8px;
+}
+
 @media (max-width: 768px) {
+  .scroll-area { display: none !important; }
+  .artist-scroller-container { margin: 1rem -1rem; width: calc(100% + 2rem); }
+  .artist-track { padding: 1rem 2rem; gap: 1rem; }
+  .artist-card { flex: 0 0 250px; }
+  
+  /* Reset to original values for other sections */
+  .tt-prices { grid-template-columns: 1fr; gap: 1rem; margin: 2rem 0; }
   .vibe-section { padding: 5rem 1rem; }
   .vibe-actions { flex-direction: column; gap: 1.5rem; }
   .vibe-btn { width: 100%; transform: rotate(0); text-align: center; }

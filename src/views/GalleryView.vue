@@ -7,6 +7,22 @@ const VISITOR_KEY = 'silaturahmi_visitor_id'
 
 const visitorId = ref('')
 
+const slides = [
+  '/foot looping beranda/HRS00841.jpg',
+  '/foot looping beranda/HRS01545.jpg',
+  '/foot looping beranda/HRS01879.jpg',
+  '/foot looping beranda/HRS03310.jpg',
+  '/foot looping beranda/HRS05245.jpg',
+  '/foot looping beranda/HRS02450.jpg',
+]
+
+const currentSlide = ref(0)
+let intervalId = null
+
+function nextSlide() {
+  currentSlide.value = (currentSlide.value + 1) % slides.length
+}
+
 onMounted(() => {
   let vid = localStorage.getItem(VISITOR_KEY)
   if (!vid) {
@@ -14,6 +30,14 @@ onMounted(() => {
     localStorage.setItem(VISITOR_KEY, vid)
   }
   visitorId.value = vid
+  
+  intervalId = setInterval(nextSlide, 4000)
+})
+
+import { onUnmounted } from 'vue'
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
 })
 
 // Slight random rotation per card (-6 to +6 deg)
@@ -128,10 +152,18 @@ function closeLightbox() { lightbox.value = null }
 <template>
   <!-- Hero -->
   <section class="mem-hero">
-    <div class="mem-hero-bg"></div>
+    <div class="mem-hero-bg">
+      <div
+        v-for="(slide, index) in slides"
+        :key="index"
+        class="slide"
+        :class="{ active: index === currentSlide }"
+        :style="{ backgroundImage: `url('${slide}')` }"
+      ></div>
+      <div class="bg-overlay"></div>
+    </div>
     <div class="container mem-hero-inner">
       <div class="mem-hero-text">
-        <div class="mem-eyebrow">📸 GALERI</div>
         <h1 class="mem-title">
           <span class="mem-highlight">MEMORABLE</span>
           <span class="mem-title-rest"> MOMEN DI</span>
@@ -276,10 +308,27 @@ function closeLightbox() { lightbox.value = null }
 .mem-hero-bg {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%),
-    url('/konser2.jpg') center/cover no-repeat;
   z-index: 0;
+  overflow: hidden;
+  background: var(--color-black);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide.active { opacity: 0.8; }
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.9) 100%);
+  z-index: 1;
 }
 
 .mem-hero-inner {
@@ -292,14 +341,7 @@ function closeLightbox() { lightbox.value = null }
   gap: 2rem;
 }
 
-.mem-eyebrow {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--color-primary);
-  text-transform: uppercase;
-}
+
 
 .mem-title {
   font-size: clamp(2.2rem, 6vw, 5rem);

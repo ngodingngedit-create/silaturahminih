@@ -49,7 +49,7 @@
           <!-- Column 1: Brand -->
           <div class="footer-col brand-col">
             <img src="/silaturahmi.png" alt="Silaturahmi Festival" class="footer-logo" />
-            <p class="footer-tagline">"SEMUA AKAN PUNK PADA WAKTUNYA"</p>
+            <p class="footer-tagline">"TAGLINE TBA"</p>
           </div>
 
           <!-- Column 2: Quick Links -->
@@ -66,9 +66,9 @@
           <div class="footer-col">
             <h3 class="footer-heading">INFO EVENT</h3>
             <div class="footer-info">
-              <p class="hi-sub">Silaturahmi Festival 2027 siap kembali menggebrak. Cek info selengkapnya di bawah.</p>
-              <p>PAMULANG SQUARE</p>
-              <p class="ih-sub">Silaturahmi Festival 2027 siap kembali menggebrak. Cek info selengkapnya di bawah.</p>
+              <p class="hi-sub">TBA</p>
+              <p>TBA</p>
+              <p class="ih-sub">TBA</p>
             </div>
           </div>
 
@@ -77,7 +77,7 @@
             <h3 class="footer-heading">IKUTI KAMI</h3>
             <div class="footer-social">
               <a href="https://instagram.com/silaturahmifestival" target="_blank" class="social-link">
-                @silaturahmifestival
+                @silaturahminih
               </a>
             </div>
           </div>

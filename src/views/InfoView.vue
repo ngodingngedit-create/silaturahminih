@@ -10,24 +10,24 @@ function toggleFaq(i) {
 
 const faqs = [
   {
-    q: 'Parkir ada nggak di Pamulang Square?',
-    a: 'Ada, Pamulang Square punya area parkir yang cukup luas. Tapi lebih disarankan naik kendaraan umum atau ojol karena diperkirakan bakal rame banget.',
+    q: 'TBA',
+    a: 'TBA',
   },
   {
-    q: 'Boleh bawa makanan dari luar?',
-    a: 'Tidak boleh. Di dalam area festival sudah tersedia banyak booth makanan dan minuman.',
+    q: 'TBA',
+    a: 'TBA',
   },
   {
-    q: 'Gimana kondisi venue-nya?',
-    a: 'Pamulang Square adalah area outdoor. Disarankan pakai baju yang nyaman dan siapkan jas hujan jika cuaca tidak menentu.',
+    q: 'TBA',
+    a: 'TBA',
   },
   {
-    q: 'Ada fasilitas apa aja di venue?',
-    a: 'Toilet umum, area istirahat, booth merchandise, booth makanan & minuman, dan area foto.',
+    q: 'TBA',
+    a: 'TBA',
   },
   {
-    q: 'Apakah boleh keluar-masuk venue?',
-    a: 'Tidak. Tiket hanya berlaku untuk satu kali masuk. Keluar berarti tiket hangus.',
+    q: 'TBA',
+    a: 'TBA',
   },
 ]
 
@@ -65,34 +65,32 @@ const schedule = [
     <div class="container">
       <div class="venue-grid">
         <div class="venue-text">
-          <div class="section-label">LOKASI ACARA</div>
-          <h2 class="venue-title">PAMULANG SQUARE</h2>
+          <div class="section-label">VENUE</div>
+          <h2 class="venue-title">TBA</h2>
           <p class="venue-address">
-            Jl. Surya Kencana No.29, Pamulang Bar.,<br>
-            Kec. Pamulang, Kota Tangerang Selatan,<br>
-            Banten 15417
+            TBA
           </p>
 
           <div class="venue-meta-list">
             <div class="vm-item">
               <span class="vm-icon">📅</span>
               <div>
-                <span class="vm-label">Tanggal</span>
-                <span class="vm-val">Minggu, 15 Juni 2027</span>
+                <span class="vm-label">TANGGAL</span>
+                <span class="vm-val">TBA</span>
               </div>
             </div>
             <div class="vm-item">
               <span class="vm-icon">🕐</span>
               <div>
-                <span class="vm-label">Jam Buka</span>
-                <span class="vm-val">13.00 WIB — Selesai</span>
+                <span class="vm-label">WAKTU </span>
+                <span class="vm-val">TBA</span>
               </div>
             </div>
             <div class="vm-item">
               <span class="vm-icon">🚇</span>
               <div>
-                <span class="vm-label">Transportasi</span>
-                <span class="vm-val">Ojol / KRL + Angkot</span>
+                <span class="vm-label">KENDARAAN UMUM</span>
+                <span class="vm-val">TBA</span>
               </div>
             </div>
           </div>
@@ -119,7 +117,7 @@ const schedule = [
               title="Pamulang Square Map"
             ></iframe>
           </div>
-          <div class="map-label">📍 Pamulang Square, Tangerang Selatan</div>
+          <div class="map-label">📍 TBA</div>
         </div>
       </div>
     </div>
@@ -128,7 +126,7 @@ const schedule = [
   <!-- Schedule Section -->
   <section class="schedule-section">
     <div class="container">
-      <div class="section-label">RUNDOWN ACARA</div>
+      <!-- <div class="section-label">RUNDOWN ACARA</div> -->
       <h2 class="schedule-title">JADWAL <span class="accent">PENAMPILAN</span></h2>
 
       <div class="schedule-table">
@@ -164,31 +162,30 @@ const schedule = [
   <!-- How to Get There -->
   <section class="transport-section">
     <div class="container">
-      <div class="section-label">CARA KE SANA</div>
+      <!-- <div class="section-label">CARA KE SANA</div> -->
       <h2 class="transport-title">RUTE <span class="accent">MENUJU VENUE</span></h2>
 
       <div class="transport-grid">
         <div class="transport-card">
           <div class="tc-icon">🚆</div>
           <h3 class="tc-title">KRL + Angkot</h3>
-          <p class="hi-date">15 JUNI 2027, JKT</p>
+          <p class="hi-date">TBA</p>
           <p class="tc-desc">
-            Turun di Stasiun Sudimara (KRL Commuter Line Rangkasbitung).
-            Lanjut angkot T02 arah Pamulang. Turun di depan Pamulang Square.
+            TBA
           </p>
         </div>
         <div class="transport-card">
           <div class="tc-icon">🛵</div>
           <h3 class="tc-title">Ojol / Taksi Online</h3>
           <p class="tc-desc">
-            Search "Pamulang Square" di Gojek/Grab. Opsi paling gampang dan recommended buat yang dari jauh.
+            TBA
           </p>
         </div>
         <div class="transport-card">
           <div class="tc-icon">🚗</div>
           <h3 class="tc-title">Kendaraan Pribadi</h3>
           <p class="tc-desc">
-            Pamulang Square tersedia area parkir. Dari Tol BSD keluar pintu Pamulang, lurus menuju Jl. Surya Kencana.
+            TBA
           </p>
         </div>
       </div>
@@ -198,7 +195,7 @@ const schedule = [
   <!-- FAQ Section -->
   <section class="faq-section">
     <div class="container">
-      <div class="section-label">PERTANYAAN UMUM</div>
+      <!-- <div class="section-label">PERTANYAAN UMUM</div> -->
       <h2 class="faq-title">FAQ</h2>
 
       <div class="faq-list">

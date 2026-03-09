@@ -15,9 +15,12 @@ onMounted(() => window.addEventListener('storage', onStorage))
 onUnmounted(() => window.removeEventListener('storage', onStorage))
 
 const placeholders = [
-  { id: 'p1', src: '/konser1.jpg', caption: 'Vibes yang gak bisa dijelasin kata-kata 🤘', ig: '' },
-  { id: 'p2', src: '/konser2.jpg', caption: 'Malam paling gila seumur hidup gue', ig: '' },
-  { id: 'p3', src: '/konser3.jpg', caption: 'Ini baru namanya festival!', ig: '' },
+  { id: 'p1', src: '/foot looping beranda/HRS00841.jpg', caption: 'Vibes yang gak bisa dijelasin kata-kata 🤘', ig: '' },
+  { id: 'p2', src: '/foot looping beranda/HRS01545.jpg', caption: 'Malam paling gila seumur hidup gue', ig: '' },
+  { id: 'p3', src: '/foot looping beranda/HRS01879.jpg', caption: 'Ini baru namanya festival!', ig: '' },
+  { id: 'p4', src: '/foot looping beranda/HRS03310.jpg', caption: 'Semua bernyanyi bersama 🎸', ig: '' },
+  { id: 'p5', src: '/foot looping beranda/HRS05245.jpg', caption: 'Kenangan tak terlupakan', ig: '' },
+  { id: 'p6', src: '/foot looping beranda/HRS02450.jpg', caption: 'Sampai jumpa di vol selanjutnya!', ig: '' },
 ]
 
 const scrollItems = computed(() => {

@@ -6,10 +6,9 @@ import { ref, computed } from 'vue'
 // Ambil ID dari URL: open.spotify.com/playlist/[ID]
 // -------------------------------------------------------
 const PLAYLISTS = [
-  { vol: 'Vol. 1', label: 'VOL 1', id: '37i9dQZF1DX0XUsuxWHRQd', year: '2022' },
-  { vol: 'Vol. 2', label: 'VOL 2', id: '37i9dQZF1DX4o1oenSJRJd', year: '2023' },
-  { vol: 'Vol. 3', label: 'VOL 3', id: '37i9dQZF1DXcBWIGoYBM5M', year: '2024' },
-  { vol: 'Vol. 4', label: 'VOL 4', id: '37i9dQZF1DX10zKzsJ2jva', year: '2027' },
+  { vol: 'Vol. 1', label: 'VOL 1', id: '3vrNwMNse3qA0O6EEmy594', year: '2025' },
+  { vol: 'Vol. 2', label: 'VOL 2', id: '4eUG8axJCXmomo7278r4wS', year: '2026' },
+  { vol: 'Vol. 3', label: 'VOL 3', id: '37i9dQZF1DXcBWIGoYBM5M', year: 'TBA' },
 ]
 
 const activeIndex = ref(0)
