@@ -145,7 +145,7 @@ const getSpotifySrc = (url) => {
 
     <div class="container" style="text-align: center;">
       <button class="btn btn-yellow" @click="router.push('/lineup')">
-        LIHAT SEMUA LINEUP →
+        LIHAT SEMUA LINEUP
       </button>
     </div>
 
@@ -211,28 +211,31 @@ const getSpotifySrc = (url) => {
       <div class="ticket-container">
         <div class="tt-content">
           <div class="section-label">DAPETIN TIKETNYA</div>
-          <h2 class="teaser-title">TIKET <span class="accent">TERSEDIA</span></h2>
+          <h2 class="teaser-title custom-hardcore-font">TIKET <span class="accent">TERSEDIA</span></h2>
           <p class="teaser-sub">
-            Presale masih ada. Jangan sampe nyesel beli harga normal.
+            Mempererat tali kasih & persaudaraan
           </p>
           
           <div class="tt-prices">
-            <div class="price-box upcoming">
-              <span class="pb-label">EARLY BIRD</span>
-              <span class="pb-value">TBA</span>
-            </div>
             <div class="price-box featured">
-              <div class="popular-badge">LIMITED</div>
+              <span class="pb-label">EARLY BIRD</span>
+              <span class="pb-value">50.000</span>
+            </div>
+            <div class="price-box upcoming">
               <span class="pb-label">PRESALE 1</span>
-              <span class="pb-value">TBA <span class="hot-icon">✨</span></span>
+              <span class="pb-value">SOON</span>
             </div>
             <div class="price-box upcoming">
               <span class="pb-label">PRESALE 2</span>
-              <span class="pb-value">TBA</span>
+              <span class="pb-value">SOON</span>
+            </div>
+            <div class="price-box upcoming">
+              <span class="pb-label">PRESALE 3</span>
+              <span class="pb-value">SOON</span>
             </div>
             <div class="price-box upcoming-accent">
               <span class="pb-label">REGULER</span>
-              <span class="pb-value">TBA</span>
+              <span class="pb-value">SOON</span>
             </div>
           </div>
 
@@ -246,7 +249,7 @@ const getSpotifySrc = (url) => {
         
         <div class="tt-visual">
           <div class="date-card coming-soon-mode">
-            <div class="big-date-hype">STAY<br>TUNED</div>
+            <div class="big-date-hype custom-hardcore-font">STAY<br>TUNED</div>
             <div class="venue-tag hype-tag">
               <span class="loc-icon">✨</span> ANNOUNCING 2027
             </div>
@@ -276,8 +279,8 @@ const getSpotifySrc = (url) => {
     <div class="container vibe-container">
       <div class="vibe-poster">
         <div class="stencil-wrap">
-          <h2 class="vibe-quote">"TAGLINE TBA"</h2>
-          <div class="stencil-shadow">"TAGLINE TBA"</div>
+          <h2 class="vibe-quote">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</h2>
+          <div class="stencil-shadow">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
         </div>
         
         <div class="vibe-actions">
@@ -413,6 +416,13 @@ section {
   pointer-events: none; /* Let the scroll-area handle the click entirely */
   transform: scale(0.8);
   opacity: 0.8;
+}
+
+.btn-yellow {
+  font-family: var(--font-body);
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
 }
 
 .scroll-area.visible .scroll-btn {
@@ -572,25 +582,49 @@ section {
 
 .tt-content { 
   flex: 1; 
+  min-width: 0;
+  overflow: hidden;
   padding: 4rem;
   border-right: 2px dashed rgba(255,255,255,0.1);
   position: relative;
 }
 
+.custom-hardcore-font {
+  font-family: 'HARDCORE ATTITUDE', var(--font-heading), sans-serif !important;
+}
+
 .tt-prices {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin: 3rem 0;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 1.25rem;
+  margin: 2.5rem 0;
+  padding-bottom: 0.8rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tt-prices::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tt-prices::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.tt-prices::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
 }
 
 .price-box {
   background: rgba(255,255,255,0.03);
-  padding: 1.5rem;
+  padding: 1.25rem 1rem;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-md);
-  flex: 1;
-  min-width: 180px;
+  flex: 0 0 160px;
+  min-width: 160px;
   position: relative;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   overflow: hidden;
@@ -843,15 +877,16 @@ section {
 
 .vibe-quote {
   font-family: var(--font-heading);
-  font-size: clamp(3rem, 10vw, 7rem);
+  font-size: clamp(1.5rem, 4.5vw, 2.5rem);
   color: var(--color-black);
-  line-height: 0.85;
+  line-height: 1;
   margin: 0;
   position: relative;
   z-index: 2;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   -webkit-text-stroke: 1px var(--color-black);
+  white-space: nowrap;
 }
 
 .stencil-shadow {
@@ -859,15 +894,16 @@ section {
   top: 8px;
   left: 8px;
   font-family: var(--font-heading);
-  font-size: clamp(3rem, 10vw, 7rem);
+  font-size: clamp(1.5rem, 4.5vw, 2.5rem);
   color: transparent;
   -webkit-text-stroke: 1px rgba(0,0,0,0.2);
-  line-height: 0.85;
+  line-height: 1;
   width: 100%;
   z-index: 1;
   user-select: none;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Sticker Buttons */

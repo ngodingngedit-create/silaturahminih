@@ -8,7 +8,7 @@ import { ref, computed } from 'vue'
 const PLAYLISTS = [
   { vol: 'Vol. 1', label: 'VOL 1', id: '3vrNwMNse3qA0O6EEmy594', year: '2025' },
   { vol: 'Vol. 2', label: 'VOL 2', id: '4eUG8axJCXmomo7278r4wS', year: '2026' },
-  { vol: 'Vol. 3', label: 'VOL 3', id: '37i9dQZF1DXcBWIGoYBM5M', year: 'TBA' },
+  { vol: 'Vol. 3', label: 'VOL 3', id: 'vol3-comingsoon', year: 'TBA', comingSoon: true },
 ]
 
 const activeIndex = ref(0)
@@ -98,7 +98,15 @@ const embedSrc = computed(() =>
             
             <Transition name="tape-insert" mode="out-in">
               <div :key="active.id" class="monitor-content">
+                <div v-if="active.comingSoon" class="coming-soon-box">
+                  <div class="cs-content">
+                    <span class="cs-badge">VOL. 3</span>
+                    <h3 class="cs-title">PLAYLIST COMING SOON</h3>
+                    <p class="cs-desc">PLAYLIST SILATURAHMI VOL 3 AKAN SEGERA HADIR. NANTIKAN RELEASENYA!</p>
+                  </div>
+                </div>
                 <iframe
+                  v-else
                   :src="embedSrc"
                   width="100%"
                   height="700"
@@ -114,11 +122,11 @@ const embedSrc = computed(() =>
           <div class="screen-footer">
             <div class="sf-item">
               <span class="sf-lab">SOURCE</span>
-              <span class="sf-val">SPOTIFY_CLOUD</span>
+              <span class="sf-val">{{ active.comingSoon ? 'UNAVAILABLE' : 'SPOTIFY_CLOUD' }}</span>
             </div>
             <div class="sf-item">
               <span class="sf-lab">BITRATE</span>
-              <span class="sf-val">320 KBPS</span>
+              <span class="sf-val">{{ active.comingSoon ? 'OFFLINE' : '320 KBPS' }}</span>
             </div>
           </div>
         </div>
@@ -127,7 +135,7 @@ const embedSrc = computed(() =>
         <div class="console-controls">
           <div class="control-group">
             <button class="c-btn stop"><span class="icon">■</span> EJECT</button>
-            <button class="c-btn play active"><span class="icon">▶</span> PLAYING</button>
+            <button class="c-btn play" :class="{ active: !active.comingSoon }"><span class="icon">▶</span> {{ active.comingSoon ? 'STANDBY' : 'PLAYING' }}</button>
           </div>
           
           <div class="vu-meter-wrap">
@@ -138,12 +146,16 @@ const embedSrc = computed(() =>
           </div>
 
           <a
+            v-if="!active.comingSoon"
             :href="`https://open.spotify.com/playlist/${active.id}`"
             target="_blank"
             class="open-spotify-btn"
           >
             OPEN IN APP
           </a>
+          <span v-else class="open-spotify-btn disabled">
+            COMING SOON
+          </span>
         </div>
       </div>
     </div>
@@ -535,6 +547,64 @@ const embedSrc = computed(() =>
 .open-spotify-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(29, 185, 84, 0.3);
+}
+
+.open-spotify-btn.disabled {
+  background: #222;
+  color: #666;
+  border: 1px solid #333;
+  cursor: not-allowed;
+}
+
+.open-spotify-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Coming Soon Box */
+.coming-soon-box {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 100%);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.cs-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cs-badge {
+  background: var(--color-primary);
+  color: #000;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+}
+
+.cs-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.cs-desc {
+  font-size: 0.9rem;
+  color: #888;
+  max-width: 400px;
+  margin: 0;
+  letter-spacing: 0.05em;
 }
 
 .screen-footer {

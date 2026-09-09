@@ -62,8 +62,8 @@ onUnmounted(() => stopAutoplay())
         <div class="info-block">
           <h2 class="hero-date">COMING SOON VOL 3</h2>
           <span class="event-year">2027</span>
-          <p class="hero-venue">TO BE ANNOUNCED</p>
-          <div class="hero-slogan">"TAGLINE TBA"</div>
+          <p class="hero-venue">PAMULANG SQUARE, TANGERANG SELATAN</p>
+          <div class="hero-slogan">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
         </div>
 
         <div class="hero-actions">
@@ -192,16 +192,26 @@ onUnmounted(() => stopAutoplay())
 
 .hero-actions {
   display: flex;
+  font-family: var(--font-body);
   gap: 1rem;
   justify-content: center;
 }
 
+.btn-yellow {
+  font-family: var(--font-body);
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
+}
+
 .btn-white {
+  font-family: var(--font-body);
   background: var(--color-white);
   color: var(--color-black);
   border-color: var(--color-white);
 }
 .btn-white:hover {
+  font-family: var(--font-body);
   background: transparent;
   color: var(--color-white);
 }
@@ -220,7 +230,7 @@ onUnmounted(() => stopAutoplay())
   background: var(--color-white);
   border: 2px solid var(--color-black);
   padding: 0.3rem 0.8rem;
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-size: 0.75rem;
   cursor: pointer;
   border-radius: var(--radius-sm);

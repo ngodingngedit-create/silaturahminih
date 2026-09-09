@@ -23,7 +23,7 @@ defineProps({
   white-space: nowrap;
   padding: 1.2rem 0;
   border: none;
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-weight: normal;
   text-transform: uppercase;
   font-size: 1.2rem;

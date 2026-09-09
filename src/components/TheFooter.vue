@@ -49,7 +49,7 @@
           <!-- Column 1: Brand -->
           <div class="footer-col brand-col">
             <img src="/silaturahmi.png" alt="Silaturahmi Festival" class="footer-logo" />
-            <p class="footer-tagline">"TAGLINE TBA"</p>
+            <p class="footer-tagline">mempererat tali kasih dan persaudaraan</p>
           </div>
 
           <!-- Column 2: Quick Links -->
@@ -66,9 +66,7 @@
           <div class="footer-col">
             <h3 class="footer-heading">INFO EVENT</h3>
             <div class="footer-info">
-              <p class="hi-sub">TBA</p>
-              <p>TBA</p>
-              <p class="ih-sub">TBA</p>
+              <p>Silaturahmi Vol 3 kembali hadir pada 17 April 2026 di Pamulang Square - Tangerang Selatan. Kembali mempererat tali kasih dan persaudaraan setelah merayakan hari raya idul fitri. sampai bertemu!</p>
             </div>
           </div>
 
@@ -77,7 +75,19 @@
             <h3 class="footer-heading">IKUTI KAMI</h3>
             <div class="footer-social">
               <a href="https://instagram.com/silaturahmifestival" target="_blank" class="social-link">
-                @silaturahminih
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>@silaturahminih</span>
+              </a>
+              <a href="mailto:barengbarengnih@gmail.com" class="social-link">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>barengbarengnih@gmail.com</span>
               </a>
             </div>
           </div>
@@ -284,62 +294,88 @@ const sponsorsLogos = [
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: var(--spacing-md);
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 1.5rem;
 }
 
 .footer-logo {
   height: 60px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .footer-tagline {
   font-family: var(--font-heading);
-  font-size: 0.7rem;
-  opacity: 0.3;
+  font-size: 0.80rem;
+  color: #ffffff;
+  opacity: 0.9;
   max-width: 250px;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .footer-heading {
   font-size: 0.8rem;
   letter-spacing: 0.1em;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.75rem;
   color: var(--color-primary);
 }
 
 .footer-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.35rem;
 }
 
 .footer-link {
   font-size: 0.9rem;
-  opacity: 0.6;
+  color: #ffffff;
+  opacity: 0.85;
   transition: var(--transition-fast);
 }
 
 .footer-link:hover { opacity: 1; color: var(--color-primary); }
 
 .footer-info p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
   margin-bottom: 0.3rem;
-  opacity: 0.8;
+  color: #ffffff;
+  opacity: 0.85;
 }
 
 .footer-info .muted { opacity: 0.4; }
 
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
 .footer-social .social-link {
-  font-size: 0.9rem;
-  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #ffffff;
+  opacity: 0.85;
   text-decoration: none;
-  color: inherit;
   transition: var(--transition-fast);
+}
+
+.footer-social .social-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #ffffff;
+  flex-shrink: 0;
 }
 
 .footer-social .social-link:hover {
   opacity: 1;
   color: var(--color-primary);
+}
+
+.footer-social .social-link:hover .social-icon {
+  stroke: var(--color-primary);
 }
 
 /* Bottom */
