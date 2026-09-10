@@ -45,4 +45,12 @@ defineProps({
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+@media (max-width: 768px) {
+  .marquee-container {
+    padding: 0.55rem 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+  }
+}
 </style>

@@ -6,21 +6,14 @@ import PhotoScroll from '../components/PhotoScroll.vue'
 import SpotifySection from '../components/SpotifySection.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { lineupVols } from '../data/lineup.js'
 
 const router = useRouter()
 
-const featuredArtists = [
-  { name: 'DONGKER', genre: 'Punk', stage: 'Main Stage', image: '/konser1.jpg', description: 'Dongker is an Indonesian punk band making massive waves in the underground scene with their infectious fast-paced anthems.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'dongker', youtube: 'Dongker', tiktok: 'dongkerofficial' } },
-  { name: 'MARJINAL', genre: 'Punk Rock', stage: 'Main Stage', image: '/konser2.jpg', description: 'An iconic street punk band hailing from Jakarta. Marjinal is not just a band, but a movement that resonates deeply with the Indonesian working class.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'taringbabi', youtube: 'MarjinalTV', tiktok: 'marjinalpunk' } },
-  { name: 'THE JANSEN', genre: 'Indie Rock', stage: 'Main Stage', image: '/konser3.jpg', description: 'The Jansen brings a perfect blend of modern indie rock and classic punk. Their energetic performances have captured the hearts of many youths.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'thejansen_id', youtube: 'TheJansen', tiktok: 'thejansen' } },
-  { name: 'THE BRANDALS', genre: 'Garage Rock', stage: 'Side Stage', image: '/konser1.jpg', description: 'The Garage Rock revival originators in Indonesia. The Brandals are known for their reckless, dirty, and chaotic live shows.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'thebrandals', youtube: 'TheBrandalsTv', tiktok: 'thebrandals_id' } },
-  { name: 'SUKATANI', genre: 'Folk Punk', stage: 'Side Stage', image: '/konser2.jpg', description: 'Folk Punk with a local twist. Sukatani combines traditional rhythms with an unapologetic punk attitude, creating an unforgettable sonic experience.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'sukatani', youtube: 'SukataniPunk', tiktok: 'sukatani' } },
-  { name: 'LIPS', genre: 'Punk Pop', stage: 'Side Stage', image: '/konser3.jpg', description: 'Bringing melodic structures into heavy punk riffs, LIPS delivers singalong choruses that stick in your head for days.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'lipsband', youtube: 'LIPSOfficial', tiktok: 'lipspop' } },
-  { name: 'DAT BUNNY', genre: 'Noise Rock', stage: 'Side Stage', image: '/konser1.jpg', description: 'Experimental noise rock with absolutely chaotic yet highly coordinated performances. Dat Bunny pushes the boundaries of underground music.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'datbunny', youtube: 'DatBunnyNoise', tiktok: 'datbunny' } },
-  { name: 'BAXLAX BOY', genre: 'Hardcore', stage: 'Side Stage', image: '/konser2.jpg', description: 'A heavyweight in the hardcore scene. Baxlax Boy brings devastating breakdowns and aggressive grooves that incite wild moshpits.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'baxlaxboy', youtube: 'BaxlaxBoyHC', tiktok: 'baxlaxboy' } },
-  { name: 'TABRAK LARI', genre: 'Ska Punk', stage: 'Main Stage', image: '/konser3.jpg', description: 'Combining upbeat rhythms with screaming punk vocals. Tabrak Lari guarantees a skanking riot at every corner of the venue.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm?utm_source=generator', social: { ig: 'tabraklari', youtube: 'TabrakLari', tiktok: 'tabraklari' } },
-  { name: 'SUKSES LANCAR REJEKI', genre: 'Punk', stage: 'Main Stage', image: '/konser1.jpg', description: 'Born in the underground clubs, Sukses Lancar Rejeki represents the purest and rawest form of modern punk rock expression.', spotify: 'https://open.spotify.com/embed/artist/3IOhBSi8QpYo4rR6oQKZP6?utm_source=generator', social: { ig: 'slr_punk', youtube: 'SLRPunk', tiktok: 'slr.punk' } }
-]
+const featuredArtists = (lineupVols.find(v => v.id === 'vol2')?.artists || []).map(a => ({
+  ...a,
+  description: a.about,
+}))
 
 const displayArtists = [...featuredArtists, ...featuredArtists]
 
@@ -70,14 +63,39 @@ const scrollRight = () => {
 
 // Modal handling
 const selectedArtist = ref(null)
+const homeTab = ref('about')
+const homeDragY = ref(0)
+const homeDragging = ref(false)
+let homeDragStartY = 0
+
+function onHomeGrabStart(e) {
+  homeDragging.value = true
+  homeDragStartY = e.touches ? e.touches[0].clientY : e.clientY
+}
+function onHomeGrabMove(e) {
+  if (!homeDragging.value) return
+  const y = e.touches ? e.touches[0].clientY : e.clientY
+  homeDragY.value = Math.max(0, y - homeDragStartY)
+}
+function onHomeGrabEnd() {
+  if (!homeDragging.value) return
+  homeDragging.value = false
+  if (homeDragY.value > 110) closeModal()
+  homeDragY.value = 0
+}
 
 const openModal = (artist) => {
   selectedArtist.value = artist
+  homeTab.value = 'about'
+  homeDragY.value = 0
+  homeDragging.value = false
   document.body.style.overflow = 'hidden'
 }
 
 const closeModal = () => {
   selectedArtist.value = null
+  homeDragY.value = 0
+  homeDragging.value = false
   document.body.style.overflow = ''
 }
 
@@ -125,12 +143,9 @@ const getSpotifySrc = (url) => {
           >
             <div class="artist-img-wrapper">
               <img :src="artist.image" :alt="artist.name" class="artist-img" />
-              <div class="artist-overlay"></div>
-            </div>
-            <div class="artist-info">
-              <span class="artist-genre">{{ artist.genre }}</span>
-              <h3 class="artist-name">{{ artist.name }}</h3>
-              <span class="artist-stage">{{ artist.stage }}</span>
+              <div class="artist-overlay">
+                <h3 class="artist-name" :title="artist.name">{{ artist.name }}</h3>
+              </div>
             </div>
           </div>
         </div>
@@ -163,50 +178,63 @@ const getSpotifySrc = (url) => {
   </section>
 
   <!-- Modal Artist Detail outside the section -->
-  <Transition name="fade">
-    <div v-if="selectedArtist" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <button class="close-btn" @click="closeModal">✕</button>
-        
-        <img :src="selectedArtist.image" :alt="selectedArtist.name" class="modal-img" />
-        
-        <div class="modal-body">
-          <h3 class="modal-name">{{ selectedArtist.name }}</h3>
-          <p class="modal-genre">{{ selectedArtist.genre }} | {{ selectedArtist.stage }}</p>
-          
-          <div class="modal-desc">{{ selectedArtist.description }}</div>
-          
-          <div class="modal-socials">
-            <a :href="`https://instagram.com/${selectedArtist.social.ig}`" target="_blank" class="social-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              Instagram
-            </a>
-            <a :href="`https://youtube.com/c/${selectedArtist.social.youtube}`" target="_blank" class="social-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-              YouTube
-            </a>
-            <a :href="`https://tiktok.com/@${selectedArtist.social.tiktok}`" target="_blank" class="social-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
-              TikTok
-            </a>
+  <Transition name="home-sheet">
+    <div v-if="selectedArtist" class="home-modal" @click.self="closeModal">
+      <div
+        class="home-modal-card"
+        :style="homeDragY ? { transform: `translateY(${homeDragY}px)` } : null"
+        :class="{ dragging: homeDragging }"
+      >
+        <button class="home-close" @click="closeModal">✕</button>
+        <div
+          class="home-grab"
+          @mousedown="onHomeGrabStart"
+          @mousemove="onHomeGrabMove"
+          @mouseup="onHomeGrabEnd"
+          @mouseleave="onHomeGrabEnd"
+          @touchstart.passive="onHomeGrabStart"
+          @touchmove.passive="onHomeGrabMove"
+          @touchend="onHomeGrabEnd"
+        ><span></span></div>
+        <div class="home-modal-media">
+          <img :src="selectedArtist.image" :alt="selectedArtist.name" />
+        </div>
+        <div class="home-modal-info">
+          <h3 class="home-modal-name">{{ selectedArtist.name }}</h3>
+          <div class="home-tabs">
+            <button :class="{ active: homeTab === 'about' }" @click="homeTab = 'about'">Deskripsi</button>
+            <button :class="{ active: homeTab === 'playlist' }" @click="homeTab = 'playlist'">Playlist</button>
           </div>
-
-          <div class="modal-spotify">
-            <div class="spotify-header">
-              <span class="spotify-dot"></span> PLAYLIST
+          <div v-if="homeTab === 'about'" class="home-about">
+            <p class="home-about-title">About</p>
+            <p class="home-about-text">{{ selectedArtist.description || selectedArtist.about }}</p>
+            <div class="home-socmed">
+              <a :href="`https://instagram.com/${selectedArtist.social.ig}`" target="_blank" aria-label="Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a :href="`https://youtube.com/c/${selectedArtist.social.youtube}`" target="_blank" aria-label="YouTube">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+              </a>
+              <a :href="`https://tiktok.com/@${selectedArtist.social.tiktok}`" target="_blank" aria-label="TikTok">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+              </a>
             </div>
-            <iframe :src="getSpotifySrc(selectedArtist.spotify)" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" class="spotify-iframe"></iframe>
+          </div>
+          <div v-else class="home-playlist">
+            <iframe :src="getSpotifySrc(selectedArtist.spotify)" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           </div>
         </div>
       </div>
     </div>
   </Transition>
 
+  <MarqueeSection text="LINEUP VOL 2 • SILATURAHMI FESTIVAL" />
+
   <!-- Video Recap -->
   <VideoRecap />
 
   <!-- Ticket Teaser -->
-  <section class="teaser-ticket">
+  <section class="teaser-ticket raised">
     <div class="container">
       <div class="ticket-container">
         <div class="tt-content">
@@ -262,6 +290,8 @@ const getSpotifySrc = (url) => {
   <!-- Spotify Playlists -->
   <SpotifySection />
 
+  <MarqueeSection text="GALERI KENANGAN • SILATURAHMI FESTIVAL" />
+
   <!-- Photo Scroll -->
   <PhotoScroll />
 
@@ -284,10 +314,6 @@ const getSpotifySrc = (url) => {
         </div>
         
         <div class="vibe-actions">
-          <button class="btn vibe-btn btn-sticker-black" @click="router.push('/info')">
-            <span class="btn-text">INFO VENUE</span>
-            <span class="sticker-tail"></span>
-          </button>
           <button class="btn vibe-btn btn-sticker-white" @click="router.push('/lineup')">
             <span class="btn-text">LIHAT LINEUP</span>
             <span class="sticker-tail"></span>
@@ -302,7 +328,7 @@ const getSpotifySrc = (url) => {
 <style scoped>
 /* ---- Common Section Styles ---- */
 section {
-  padding: var(--spacing-xl) 0;
+  padding: 2rem 0;
   border-bottom: 2px solid var(--color-black);
 }
 
@@ -337,6 +363,13 @@ section {
   font-size: 1.1rem;
   margin-bottom: var(--spacing-lg);
   max-width: 500px;
+}
+
+.teaser-lineup .teaser-title,
+.teaser-lineup .teaser-sub {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ---- Lineup Teaser (Sticker Style) ---- */
@@ -436,113 +469,71 @@ section {
 }
 
 .artist-card {
-  flex: 0 0 300px;
-  background: var(--color-dark-surface);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: var(--transition-normal);
+  flex: 0 0 200px;
+  background: none;
+  border: none;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  padding: 0; /* Removing padding to let the image be the hero */
-}
-
-.artist-card::before {
-  content: "";
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 12px;
-  height: 12px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.artist-card:nth-child(even)::before { background: var(--color-secondary); }
-.artist-card:nth-child(3n)::before { background: var(--color-tertiary); }
-
-.artist-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-  border-color: var(--color-primary);
+  scroll-snap-align: start;
 }
 
 .artist-img-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: 2/3;
   overflow: hidden;
+  border-radius: 6px;
+  background: #111;
 }
 
 .artist-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.2);
-  transition: var(--transition-normal);
+  display: block;
+  transition: transform 0.4s ease;
 }
 
 .artist-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--color-black) 0%, transparent 70%);
-  opacity: 0.8;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.6rem 0.9rem 0.9rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.25) 65%, transparent);
+  text-align: left;
+  opacity: 1;
 }
 
 .artist-card:hover .artist-img {
   transform: scale(1.05);
-  filter: grayscale(0) contrast(1.1);
-}
-
-.artist-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 1.5rem;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
 }
 
 .artist-name {
   font-family: var(--font-heading);
-  font-size: 2.2rem; /* Increased size back */
-  color: var(--color-white);
-  line-height: 0.9;
-  margin: 0.4rem 0 0.8rem;
-  text-shadow: 2px 2px 0 var(--color-black);
-}
-
-.artist-genre {
-  font-size: 0.75rem;
+  color: #fff;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  line-height: 0.95;
   text-transform: uppercase;
-  font-weight: 800;
-  color: var(--color-primary);
-  letter-spacing: 0.15em;
-}
-
-.artist-stage {
-  align-self: flex-start;
-  background: var(--color-black);
-  color: var(--color-white);
-  padding: 0.3rem 0.8rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 
 /* ---- Ticket Teaser (Innovated Coupon Layout) ---- */
 .teaser-ticket {
   background: var(--color-primary);
-  background-image: 
+  background-image:
     radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0);
   background-size: 24px 24px;
+}
+
+.teaser-ticket.raised {
+  margin-top: -1rem;
+  padding-top: 1rem;
 }
 
 .ticket-container {
@@ -979,14 +970,17 @@ section {
   opacity: 0;
 }
 
-.modal-overlay {
+.home-sheet-enter-active .home-modal-card { transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.home-sheet-leave-active .home-modal-card { transition: transform 0.35s ease-in; }
+.home-sheet-enter-from .home-modal-card { transform: translateY(100%); }
+.home-sheet-leave-to .home-modal-card { transform: translateY(100%); }
+.home-sheet-enter-active, .home-sheet-leave-active { transition: opacity 0.3s ease; }
+.home-sheet-enter-from, .home-sheet-leave-to { opacity: 0; }
+
+.home-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -994,155 +988,185 @@ section {
   padding: 1rem;
 }
 
-.modal-content {
+.home-modal-card {
   background: var(--color-dark-surface);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 500px;
+  border-radius: 8px;
+  width: min(460px, 100%);
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  scrollbar-width: thin;
+  touch-action: pan-y;
 }
 
-.close-btn {
+.home-modal-card.dragging { transition: none; }
+
+.home-grab { display: none; position: absolute; top: 0; left: 0; right: 0; z-index: 3; padding: 0.6rem; cursor: grab; touch-action: none; background: transparent; pointer-events: auto; }
+.home-grab span { display: block; width: 44px; height: 5px; margin: 0 auto; border-radius: 999px; background: rgba(255,255,255,0.7); box-shadow: 0 1px 6px rgba(0,0,0,0.5); }
+
+.home-close {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(0,0,0,0.7);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.2);
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 1.2rem;
-  line-height: 1;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
   cursor: pointer;
-  z-index: 10;
+  z-index: 2;
+}
+
+.home-close:hover {
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-color: var(--color-primary);
+}
+
+.home-modal-media {
+  background: #111;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.home-modal-media img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+}
+
+.home-modal-info {
+  padding: 1.5rem;
+  min-width: 0;
+}
+
+.home-modal-name {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--color-white);
+  margin-bottom: 1rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.home-tabs {
   display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.home-tabs button {
+  padding: 0.7rem 0.2rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--font-body);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+
+.home-tabs button.active {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.home-about-title {
+  font-family: var(--font-body);
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.home-about-text {
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+}
+
+.home-socmed {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.home-socmed a {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--color-white);
 }
 
-.close-btn:hover {
+.home-socmed a:hover {
   background: var(--color-primary);
-  color: var(--color-black);
   border-color: var(--color-primary);
-  transform: scale(1.1) rotate(90deg);
-}
-
-.modal-img {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  border-bottom: 2px solid var(--color-primary);
-}
-
-.modal-body {
-  padding: 2rem;
-}
-
-.modal-name {
-  font-family: var(--font-heading);
-  font-size: 2.5rem;
-  color: var(--color-white);
-  margin-bottom: 0.2rem;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.modal-genre {
-  font-size: 0.9rem;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-}
-
-.modal-desc {
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  font-size: 0.95rem;
-}
-
-.modal-socials {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.social-link {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: var(--color-white);
-  text-decoration: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.social-link:hover {
-  background: var(--color-primary);
   color: var(--color-black);
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
 }
 
-.modal-spotify {
-  margin-top: 2rem;
-  background: #18181b; /* match page bg or slightly darker */
-  border-radius: 12px;
-  padding: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.spotify-header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  color: var(--color-white);
-  letter-spacing: 0.1em;
-  margin-bottom: 1.2rem;
-  text-transform: uppercase;
-}
-
-.spotify-dot {
-  width: 8px;
-  height: 8px;
-  background: #1DB954;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(29, 185, 84, 0.8);
-}
-
-.spotify-iframe {
-  border-radius: 8px;
+.home-playlist iframe {
+  border-radius: 6px;
+  border: none;
 }
 
 @media (max-width: 768px) {
   .scroll-area { display: none !important; }
   .artist-scroller-container { margin: 1rem -1rem; width: calc(100% + 2rem); }
-  .artist-track { padding: 1rem 2rem; gap: 1rem; }
-  .artist-card { flex: 0 0 250px; }
+  .artist-track { padding: 1rem 2rem; gap: 0.9rem; }
+  .artist-card { flex: 0 0 150px; }
+  .home-modal { padding: 0; align-items: flex-end; }
+  .home-modal-card { width: 100%; max-height: 88vh; border-radius: 18px 18px 0 0; border-bottom: none; }
+  .home-grab { display: block; }
+  .home-modal-media img { height: 240px; }
+  .home-modal-info { padding: 1.1rem; }
+  .home-playlist iframe { height: 280px; }
   
   /* Reset to original values for other sections */
-  .tt-prices { grid-template-columns: 1fr; gap: 1rem; margin: 2rem 0; }
-  .vibe-section { padding: 5rem 1rem; }
-  .vibe-actions { flex-direction: column; gap: 1.5rem; }
-  .vibe-btn { width: 100%; transform: rotate(0); text-align: center; }
-  .stencil-wrap { margin-bottom: 3rem; }
+  .ticket-container { border-radius: 12px; padding: 0; overflow: hidden; text-align: center; }
+  .ticket-container::after,
+  .ticket-container::before { display: none; }
+  .tt-content { padding: 1.75rem 1.25rem 1.5rem; border-right: none; border-bottom: 2px dashed rgba(255,255,255,0.1); }
+  .teaser-ticket .teaser-sub { font-size: 0.95rem; margin-bottom: 0; }
+  .tt-prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin: 1.5rem 0; overflow: visible; padding-bottom: 0; }
+  .price-box { flex: none; min-width: 0; width: auto; padding: 1rem 0.75rem; scroll-snap-align: unset; }
+  .price-box.featured { grid-column: 1 / -1; transform: none; }
+  .pb-value { font-size: 1.4rem; }
+  .tt-actions { margin-top: 0.25rem; }
+  .tt-actions .btn { width: 100%; justify-content: center; }
+  .tt-visual { padding: 2rem 1rem; }
+  .big-date-hype { font-size: clamp(2.5rem, 14vw, 3.5rem); margin-bottom: 1rem; }
+  .hype-tag { font-size: 0.65rem; padding: 0.6rem 1rem; }
+  .vibe-section { padding: 4rem 1rem; }
+  .vibe-actions { flex-direction: row; gap: 1rem; }
+  .vibe-btn { width: auto; transform: rotate(0); text-align: center; padding: 0.8rem 1.6rem; font-size: 0.78rem; }
+  .stencil-wrap { margin-bottom: 2rem; max-width: 100%; }
+  .vibe-quote,
+  .stencil-shadow {
+    white-space: normal;
+    font-size: clamp(1.4rem, 8vw, 2rem);
+    line-height: 1.05;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  .stencil-shadow { top: 5px; left: 50%; transform: translateX(calc(-50% + 5px)); width: 320px; }
   .tape { width: 80px; height: 30px; opacity: 0.4; }
 }
 </style>

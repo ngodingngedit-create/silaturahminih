@@ -61,8 +61,7 @@ onUnmounted(() => stopAutoplay())
         
         <div class="info-block">
           <h2 class="hero-date">COMING SOON VOL 3</h2>
-          <span class="event-year">2027</span>
-          <p class="hero-venue">PAMULANG SQUARE, TANGERANG SELATAN</p>
+          
           <div class="hero-slogan">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
         </div>
 
@@ -166,6 +165,16 @@ onUnmounted(() => stopAutoplay())
   text-transform: uppercase;
 }
 
+.event-year {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.35em;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+}
 .hero-venue {
   font-family: var(--font-body);
   font-size: 0.9rem;
@@ -179,8 +188,7 @@ onUnmounted(() => stopAutoplay())
 
 .hero-slogan {
   display: inline-block;
-  background: var(--color-primary);
-  color: var(--color-black);
+  color: var(--color-white);
   padding: 0.6rem 1.5rem;
   font-family: var(--font-body);
   font-weight: 700;
@@ -249,15 +257,28 @@ onUnmounted(() => stopAutoplay())
 }
 
 @media (max-width: 768px) {
-  .hero-content { width: 100%; }
-  .logo-wrapper { margin-bottom: 1.5rem; }
-  .hero-logo { 
-    max-width: 85vw; 
-    margin: 0 auto; 
-    animation: float-mobile 6s ease-in-out infinite;
+  .hero { padding: 120px 2rem 60px; min-height: 100vh; }
+  .hero-content { width: 100%; max-width: 900px; }
+  .content-inner { padding: 2rem; }
+  .logo-wrapper { margin-bottom: 2rem; }
+  .hero-logo {
+    max-width: min(550px, 90vw);
+    margin: 0 auto;
+    animation: float 8s ease-in-out infinite;
   }
-  .hero-actions { flex-direction: column; gap: 1rem; }
-  .btn { width: 100%; }
+  .info-block { margin-bottom: 3rem; }
+  .info-block > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .hero-date { font-size: clamp(2.5rem, 8vw, 5.5rem); margin-bottom: 0.5rem; }
+  .event-year { font-size: 0.9rem; }
+  .hero-venue { font-size: 0.9rem; letter-spacing: 0.15em; margin-bottom: 2.5rem; }
+  .hero-slogan { font-size: 0.8rem; padding: 0.6rem 1.5rem; max-width: none; }
+  .hero-actions { flex-direction: row; gap: 1rem; align-items: center; justify-content: center; flex-wrap: nowrap; }
+  .hero-actions .btn { width: auto; min-width: 0; padding: 0.8rem 2.2rem; font-size: 0.9rem; white-space: nowrap; }
 }
 
 @keyframes float-mobile {

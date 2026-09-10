@@ -1,27 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import MarqueeSection from '../components/MarqueeSection.vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { defaultGalleryPhotos } from '../data/gallery.js'
 
 const STORAGE_KEY = 'silaturahmi_gallery'
 const VISITOR_KEY = 'silaturahmi_visitor_id'
 
 const visitorId = ref('')
-
-const slides = [
-  '/foot looping beranda/HRS00841.jpg',
-  '/foot looping beranda/HRS01545.jpg',
-  '/foot looping beranda/HRS01879.jpg',
-  '/foot looping beranda/HRS03310.jpg',
-  '/foot looping beranda/HRS05245.jpg',
-  '/foot looping beranda/HRS02450.jpg',
-]
-
-const currentSlide = ref(0)
-let intervalId = null
-
-function nextSlide() {
-  currentSlide.value = (currentSlide.value + 1) % slides.length
-}
 
 onMounted(() => {
   let vid = localStorage.getItem(VISITOR_KEY)
@@ -30,14 +14,6 @@ onMounted(() => {
     localStorage.setItem(VISITOR_KEY, vid)
   }
   visitorId.value = vid
-  
-  intervalId = setInterval(nextSlide, 4000)
-})
-
-import { onUnmounted } from 'vue'
-
-onUnmounted(() => {
-  if (intervalId) clearInterval(intervalId)
 })
 
 // Slight random rotation per card (-6 to +6 deg)
@@ -59,6 +35,7 @@ function loadPhotos() {
 }
 
 const photos = ref(loadPhotos())
+const displayPhotos = computed(() => photos.value.length > 0 ? photos.value : defaultGalleryPhotos)
 const showForm = ref(false)
 const form = ref({ caption: '', ig: '' })
 const fileInput = ref(null)
@@ -111,6 +88,7 @@ function clearForm() {
 function submitPhoto() {
   if (!previewUrl.value) { errorMsg.value = 'Pilih foto dulu!'; return }
   if (!form.value.caption.trim()) { errorMsg.value = 'Tulis caption dulu!'; return }
+  if (!form.value.ig.trim()) { errorMsg.value = 'Isi username Instagram dulu!'; return }
 
   const newPhoto = {
     id: Date.now(),
@@ -150,33 +128,13 @@ function closeLightbox() { lightbox.value = null }
 </script>
 
 <template>
-  <!-- Hero -->
-  <section class="mem-hero">
-    <div class="mem-hero-bg">
-      <div
-        v-for="(slide, index) in slides"
-        :key="index"
-        class="slide"
-        :class="{ active: index === currentSlide }"
-        :style="{ backgroundImage: `url('${slide}')` }"
-      ></div>
-      <div class="bg-overlay"></div>
-    </div>
-    <div class="container mem-hero-inner">
-      <div class="mem-hero-text">
-        <h1 class="mem-title">
-          <span class="mem-highlight">MEMORABLE</span>
-          <span class="mem-title-rest"> MOMEN DI</span>
-          <span class="mem-fest"> SILATURAHMI FEST</span>
-        </h1>
-      </div>
+  <section class="gallery-top">
+    <div class="container gallery-top-inner">
       <button class="submit-btn" @click="showForm = !showForm">
-        {{ showForm ? '✕ TUTUP FORM' : '📤 KIRIM KENANGAN LO' }}
+        {{ showForm ? '✕ TUTUP FORM' : 'KIRIM KENANGAN LO' }}
       </button>
     </div>
   </section>
-
-  <MarqueeSection text="MEMORABLE MOMENT AT SILAHTURAHMI" />
 
   <!-- Upload Form (collapsible) -->
   <Transition name="slide-down">
@@ -205,7 +163,7 @@ function closeLightbox() { lightbox.value = null }
                 <small class="char-count">{{ form.caption.length }}/200</small>
               </div>
               <div class="up-field">
-                <label class="up-label">INSTAGRAM</label>
+                <label class="up-label">USERNAME INSTAGRAM *</label>
                 <div class="ig-wrap">
                   <span class="ig-at">@</span>
                   <input v-model="form.ig" type="text" maxlength="30"
@@ -233,14 +191,9 @@ function closeLightbox() { lightbox.value = null }
   <section class="wall-section">
     <div class="container">
 
-      <div v-if="photos.length === 0" class="empty-wall">
-        <div class="empty-tape"></div>
-        <p class="empty-text">🎸 Belum ada kenangan. Jadilah yang pertama!</p>
-      </div>
-
-      <div v-else class="polaroid-wall">
+      <div class="polaroid-wall">
         <div
-          v-for="photo in photos"
+          v-for="photo in displayPhotos"
           :key="photo.id"
           class="polaroid"
           :class="getTapePos(photo.id)"
@@ -251,8 +204,9 @@ function closeLightbox() { lightbox.value = null }
           <div class="polaroid-img-wrap">
             <img :src="photo.src" :alt="photo.caption" class="polaroid-img" loading="lazy" />
             <div class="polaroid-hover-icon">🔍</div>
-            <button 
-              class="polaroid-delete" 
+            <button
+              v-if="!photo.default"
+              class="polaroid-delete"
               @click.stop="deletePhoto(photo.id)"
               title="Hapus foto"
             >
@@ -262,7 +216,7 @@ function closeLightbox() { lightbox.value = null }
           <div class="polaroid-body">
             <p class="polaroid-caption">{{ photo.caption }}</p>
             <div class="polaroid-footer">
-              <span v-if="photo.ig" class="polaroid-ig">
+              <span class="polaroid-ig">
                 <svg class="ig-icon" viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                 </svg>
@@ -295,96 +249,32 @@ function closeLightbox() { lightbox.value = null }
 </template>
 
 <style scoped>
-/* ---- Hero ---- */
-.mem-hero {
-  position: relative;
-  min-height: 50vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  padding-bottom: 3rem;
-}
-
-.mem-hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
+/* ---- Gallery top (no hero) ---- */
+.gallery-top {
   background: var(--color-black);
+  padding: 9rem 0 1.5rem;
 }
 
-.slide {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-}
-
-.slide.active { opacity: 0.8; }
-
-.bg-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.9) 100%);
-  z-index: 1;
-}
-
-.mem-hero-inner {
-  position: relative;
-  z-index: 1;
-  padding-top: 8rem;
+.gallery-top-inner {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2rem;
-}
-
-
-
-.mem-title {
-  font-size: clamp(2.2rem, 6vw, 5rem);
-  line-height: 1;
-  color: var(--color-white);
-  flex-wrap: wrap;
-  display: flex;
-  align-items: baseline;
-  gap: 0.3em;
-}
-
-.mem-highlight {
-  background: var(--color-primary);
-  color: var(--color-black);
-  padding: 0 0.3em;
-  display: inline-block;
-  font-style: italic;
-  transform: skewX(-4deg);
-}
-
-.mem-title-rest { color: var(--color-white); }
-.mem-fest {
-  color: var(--color-primary);
-  opacity: 0.8;
-  font-size: 0.65em;
-  letter-spacing: 0.05em;
+  justify-content: center;
 }
 
 /* Submit Button */
 .submit-btn {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.8rem;
   letter-spacing: 0.12em;
   color: var(--color-black);
   background: var(--color-primary);
   border: none;
-  padding: 0.9rem 2.5rem;
+  padding: 0.65rem 1.6rem;
   cursor: pointer;
   transition: all 0.2s;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 .submit-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-.submit-btn.sm { font-size: 0.9rem; padding: 0.75rem 2rem; }
+.submit-btn.sm { font-size: 0.78rem; padding: 0.6rem 1.5rem; }
 
 /* ---- Upload Panel ---- */
 .upload-panel {
@@ -474,7 +364,7 @@ function closeLightbox() { lightbox.value = null }
   padding: 0.6rem 0.8rem;
 }
 
-.up-actions { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 0.5rem; }
+.up-actions { display: flex; gap: 0.8rem; justify-content: center; margin-top: 0.5rem; }
 
 .btn-ghost {
   background: transparent;
@@ -504,7 +394,7 @@ function closeLightbox() { lightbox.value = null }
 /* ---- Wall ---- */
 .wall-section {
   background: var(--color-black);
-  padding: 5rem 0 7rem;
+  padding: 1.5rem 0 7rem;
   min-height: 60vh;
 }
 

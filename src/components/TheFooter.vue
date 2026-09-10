@@ -1,7 +1,7 @@
 <template>
   <footer class="site-footer">
     <!-- Primary Partners Section (Joined Section) -->
-    <div class="primary-partners-section">
+    <div v-if="!isTicketPage" class="primary-partners-section">
       <div class="container lg-container">
         <div class="partners-bar">
           <div v-for="category in primaryPartners" :key="category.title" class="partner-group">
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Main Footer -->
-    <div class="footer-main">
+    <div v-if="!isTicketPage" class="footer-main">
       <div class="container lg-container">
         <div class="footer-grid">
           <!-- Column 1: Brand -->
@@ -56,9 +56,20 @@
           <div class="footer-col">
             <h3 class="footer-heading">NAVIGASI</h3>
             <nav class="footer-nav">
-              <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="footer-link">
-                {{ link.label }}
-              </RouterLink>
+              <template v-for="link in navLinks" :key="link.label">
+                <a
+                  v-if="link.href"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noopener"
+                  class="footer-link"
+                >
+                  {{ link.label }}
+                </a>
+                <RouterLink v-else :to="link.to" class="footer-link">
+                  {{ link.label }}
+                </RouterLink>
+              </template>
             </nav>
           </div>
 
@@ -96,7 +107,7 @@
     </div>
 
     <!-- Copyright -->
-    <div class="footer-bottom">
+    <div v-if="!isTicketPage" class="footer-bottom">
       <div class="container">
         <p class="copyright">© 2027 Silaturahmi Festival. All rights reserved.</p>
       </div>
@@ -105,14 +116,17 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute()
+const isTicketPage = computed(() => route.path === '/tickets' || route.path === '/personal-info')
 
 const navLinks = [
   { to: '/', label: 'Beranda' },
   { to: '/lineup', label: 'Lineup' },
-  { to: '/merch', label: 'Merch' },
+  { href: 'https://pasarbarengbareng.com/', label: 'Merch' },
   { to: '/tickets', label: 'Tiket' },
-  { to: '/info', label: 'Info' },
   { to: '/gallery', label: 'Galeri' },
 ]
 
@@ -123,7 +137,7 @@ const primaryPartners = [
   },
   {
     title: 'OFFICIAL TICKETING',
-    logos: ['/offcial tiketing/DECK - KOLEKTIX 2027 (5).png']
+    logos: ['/offcial tiketing/DECK - KOLEKTIX 2025 (5).png']
   }
   /*
   ,
@@ -177,28 +191,32 @@ const sponsorsLogos = [
 
 /* Unified Partners Area */
 .primary-partners-section {
-  padding: 5rem 0 1rem;
+  padding: 4rem 0 2rem;
+  text-align: center;
 }
 
 .partners-bar {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 3rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
 }
 
 .partner-group {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .partner-group-title {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #fff;
+  opacity: 0.5;
+  margin-bottom: 1.25rem;
   text-transform: uppercase;
 }
 
@@ -206,13 +224,20 @@ const sponsorsLogos = [
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.75rem;
+  align-content: center;
+  gap: 1rem;
   flex-wrap: wrap;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.primary-box {
-  width: 90px;
-  height: 90px;
+.partner-logos .sponsor-box.primary-box {
+  width: 110px;
+  height: 70px;
+  aspect-ratio: auto;
+  margin: 0;
+  flex: 0 0 auto;
 }
 
 /* Sponsorship (Grid with White Squares) */
@@ -393,33 +418,47 @@ const sponsorsLogos = [
 @media (max-width: 1024px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .partners-bar {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
     gap: 2rem;
   }
 }
 
 @media (max-width: 600px) {
   .footer-grid { grid-template-columns: 1fr; text-align: center; }
+  .footer-col { align-items: center; }
+  .footer-nav { align-items: center; }
   .footer-logo { height: 45px; margin: 0 auto 1.5rem; }
   .footer-tagline { margin: 0 auto; }
   .sponsorship-title { font-size: 1.8rem; margin-bottom: 2rem; }
+  .footer-social {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .footer-social .social-link { justify-content: center; text-align: center; }
+  .footer-bottom { padding-bottom: calc(var(--spacing-sm) + 84px); }
   
   .partners-bar {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1.25rem;
   }
 
+  .partner-group-title {
+    font-size: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .partner-logos {
+    gap: 0.6rem;
+  }
+
+  .partner-logos .sponsor-box.primary-box,
   .primary-box {
-    padding: 1rem;
-  }
-
-  .primary-img {
-    max-height: 80px;
+    width: 84px;
+    height: 54px;
   }
   
   .sponsorship-grid {

@@ -26,10 +26,7 @@ const embedSrc = computed(() =>
 
     <!-- Header Area -->
     <div class="container sp-header">
-      <div class="deck-status">
-        <span class="status-led pulsed"></span>
-        <span class="status-text">DECK SYSTEM ONLINE</span>
-      </div>
+      
 
       <h2 class="sp-title">
         <span class="sp-pre">OFFICIAL</span>
@@ -133,11 +130,6 @@ const embedSrc = computed(() =>
 
         <!-- Console Buttons -->
         <div class="console-controls">
-          <div class="control-group">
-            <button class="c-btn stop"><span class="icon">■</span> EJECT</button>
-            <button class="c-btn play" :class="{ active: !active.comingSoon }"><span class="icon">▶</span> {{ active.comingSoon ? 'STANDBY' : 'PLAYING' }}</button>
-          </div>
-          
           <div class="vu-meter-wrap">
             <div class="vu-bars">
               <span v-for="n in 12" :key="n" class="vu-bar" :style="{ animationDelay: n * 0.1 + 's' }"></span>
@@ -167,7 +159,7 @@ const embedSrc = computed(() =>
 /* ===== Core Layout ===== */
 .sp-section {
   background: #0a0a0a;
-  padding: 8rem 0;
+  padding: 4rem 0;
   position: relative;
   overflow: hidden;
   border-top: 2px solid rgba(255, 221, 0, 0.1);
@@ -197,29 +189,6 @@ const embedSrc = computed(() =>
 .sp-header {
   text-align: center;
   margin-bottom: 5rem;
-}
-
-.deck-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  background: rgba(255,255,255,0.03);
-  padding: 0.5rem 1.2rem;
-  border-radius: 50px;
-  border: 1px solid rgba(255,255,255,0.08);
-  margin-bottom: 2rem;
-}
-
-.status-led {
-  width: 8px;
-  height: 8px;
-  background: #1DB954;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #1DB954;
-}
-
-.status-led.pulsed {
-  animation: led-pulse 2s infinite ease-in-out;
 }
 
 @keyframes led-pulse {
@@ -268,21 +237,32 @@ const embedSrc = computed(() =>
 
 /* ===== Cassette Tapes (Nav) ===== */
 .tape-deck-wrap {
-  margin-bottom: 4rem;
+  margin-bottom: 1.5rem;
+  overflow: visible;
 }
 
 .cassette-grid {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  justify-content: safe center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: visible;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem 0.75rem 1rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
 }
 
 .cassette-tape {
   background: none;
   border: none;
   cursor: pointer;
-  width: 200px;
+  width: 180px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
   position: relative;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -371,11 +351,11 @@ const embedSrc = computed(() =>
 
 /* Hover & Active Tape */
 .cassette-tape:hover {
-  transform: translateY(-8px) rotate(-3deg);
+  transform: translateY(-4px) rotate(-1deg);
 }
 
 .cassette-tape.active {
-  transform: translateY(-12px) rotate(-5deg);
+  transform: translateY(-6px) rotate(-2deg);
 }
 
 .cassette-tape.active .tape-body {
@@ -472,33 +452,9 @@ const embedSrc = computed(() =>
   gap: 2rem;
 }
 
-.control-group {
-  display: flex;
-  gap: 1rem;
-}
-
-.c-btn {
-  background: #252525;
-  border: none;
-  border-bottom: 4px solid #000;
-  padding: 0.8rem 1.5rem;
-  color: #666;
-  font-weight: 800;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  cursor: pointer;
-}
-
-.c-btn.active {
-  background: #333;
-  color: #1DB954;
-  border-bottom-color: #1DB954;
-}
-
-.icon { font-size: 1rem; }
+.control-group,
+.c-btn,
+.icon { display: none !important; }
 
 .vu-meter-wrap {
   flex: 1;
@@ -637,13 +593,31 @@ const embedSrc = computed(() =>
 }
 
 @media (max-width: 768px) {
-  .console-box { padding: 1.5rem; }
-  .console-controls { flex-direction: column; align-items: stretch; }
-  .vu-meter-wrap { order: -1; }
-  .cassette-grid { gap: 1rem; }
-  .cassette-tape { width: 140px; }
-  .tape-body { height: 90px; }
-  .volume-id { font-size: 0.9rem; }
-  .sp-iframe { height: 450px; }
+  .sp-section { padding: 4rem 0; }
+  .sp-header { margin-bottom: 2rem; }
+  .tape-deck-wrap { margin-bottom: 1.5rem; }
+  .cassette-grid { justify-content: flex-start; gap: 0.6rem; flex-wrap: nowrap; padding: 0.5rem 0.25rem 0.75rem; }
+  .cassette-tape { width: 112px; flex-basis: 112px; }
+  .tape-body { height: 80px; padding: 7px; border-width: 3px; }
+  .tape-label { padding: 7px; border-left-width: 7px; }
+  .volume-id { font-size: 0.8rem; }
+  .tape-year { font-size: 0.68rem; }
+  .tape-window { height: 28px; }
+  .spool { width: 16px; height: 16px; }
+  .console-box { padding: 0.9rem; border-width: 4px; border-radius: 12px; }
+  .console-screen-area { padding: 0.65rem; border-width: 2px; border-radius: 8px; }
+  .screen-header { white-space: nowrap; overflow: hidden; gap: 0.75rem; margin-bottom: 12px; padding-bottom: 8px; }
+  .scr-meters { width: 72px; flex-shrink: 0; }
+  .player-monitor { border-width: 1px; border-radius: 8px; }
+  .scanlines { display: none; }
+  .monitor-content { line-height: 0; }
+  .player-monitor iframe,
+  .sp-iframe { height: 380px; width: 100%; border-radius: 8px; }
+  .screen-footer { gap: 0.75rem; }
+  .coming-soon-box { height: auto; min-height: 260px; padding: 1.5rem 1rem; }
+  .cs-title { font-size: 1.5rem; }
+  .console-controls { flex-direction: column; align-items: stretch; margin-top: 1.25rem; gap: 1rem; }
+  .vu-meter-wrap { order: 0; }
+  .open-spotify-btn { text-align: center; }
 }
 </style>

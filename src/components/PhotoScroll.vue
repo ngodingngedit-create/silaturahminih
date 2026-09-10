@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { defaultGalleryPhotos } from '../data/gallery.js'
 
 const STORAGE_KEY = 'silaturahmi_gallery'
 
@@ -14,14 +15,7 @@ function onStorage() { allPhotos.value = loadPhotos() }
 onMounted(() => window.addEventListener('storage', onStorage))
 onUnmounted(() => window.removeEventListener('storage', onStorage))
 
-const placeholders = [
-  { id: 'p1', src: '/foot looping beranda/HRS00841.jpg', caption: 'Vibes yang gak bisa dijelasin kata-kata 🤘', ig: '' },
-  { id: 'p2', src: '/foot looping beranda/HRS01545.jpg', caption: 'Malam paling gila seumur hidup gue', ig: '' },
-  { id: 'p3', src: '/foot looping beranda/HRS01879.jpg', caption: 'Ini baru namanya festival!', ig: '' },
-  { id: 'p4', src: '/foot looping beranda/HRS03310.jpg', caption: 'Semua bernyanyi bersama 🎸', ig: '' },
-  { id: 'p5', src: '/foot looping beranda/HRS05245.jpg', caption: 'Kenangan tak terlupakan', ig: '' },
-  { id: 'p6', src: '/foot looping beranda/HRS02450.jpg', caption: 'Sampai jumpa di vol selanjutnya!', ig: '' },
-]
+const placeholders = defaultGalleryPhotos
 
 const scrollItems = computed(() => {
   const base = allPhotos.value.length > 0 ? allPhotos.value : placeholders
@@ -49,7 +43,7 @@ function getTapePos(id) {
         <h2 class="ps-title">GALERI KENANGAN</h2>
       </div>
       <RouterLink to="/gallery" class="ps-cta">
-        📸 LIHAT SEMUA & UPLOAD →
+        LIHAT SEMUA & UPLOAD →
       </RouterLink>
     </div>
 
@@ -86,11 +80,12 @@ function getTapePos(id) {
 
 .ps-head {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 4rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
 }
 
 .ps-eyebrow {

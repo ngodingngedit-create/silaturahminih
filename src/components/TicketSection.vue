@@ -1,4 +1,6 @@
 <script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
 </script>
 
 <template>
@@ -17,7 +19,7 @@
             <ul class="features">
             </ul>
           </div>
-          <button class="btn" disabled>Akan Datang</button>
+          <button class="btn btn-yellow" @click="router.push('/tickets')">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 2 -->
@@ -30,7 +32,7 @@
             <ul class="features">
             </ul>
           </div>
-          <button class="btn" disabled>Akan Datang</button>
+          <button class="btn btn-yellow" @click="router.push('/tickets')">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 3 -->
@@ -43,7 +45,7 @@
             <ul class="features">
             </ul>
           </div>
-          <button class="btn" disabled>Akan Datang</button>
+          <button class="btn btn-yellow" @click="router.push('/tickets')">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 4 -->
@@ -56,7 +58,7 @@
             <ul class="features">
             </ul>
           </div>
-          <button class="btn" disabled>Akan Datang</button>
+          <button class="btn btn-yellow" @click="router.push('/tickets')">Lihat Detail Tiket</button>
         </div>
       </div>
     </div>

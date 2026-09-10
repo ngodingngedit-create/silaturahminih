@@ -2,7 +2,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 
 const sectionRef = ref(null);
-const videoRef = ref(null);
 const scale = ref(0.85);
 const borderRadius = ref(24);
 
@@ -42,16 +41,14 @@ onUnmounted(() => {
           borderRadius: `${borderRadius}px`
         }"
       >
-        <video 
-          ref="videoRef"
-          autoplay 
-          muted 
-          loop 
-          playsinline 
+        <iframe 
           class="recap-video"
-          src="/recap/recap (1).mp4"
-        >
-        </video>
+          src="https://www.youtube.com/embed/U-BK5xf04yg?autoplay=1&mute=1&loop=1&playlist=U-BK5xf04yg&controls=0&showinfo=0&rel=0&modestbranding=1" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen
+        ></iframe>
       </div>
     </div>
   </section>
@@ -92,9 +89,16 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .recap-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw; /* 16:9 aspect ratio */
+  min-height: 100vh;
+  min-width: 177.77vh; /* 16:9 aspect ratio */
+  transform: translate(-50%, -50%) scale(1.35); /* Scale up to crop black bars embedded in source video */
+  border: none;
+  pointer-events: none;
 }
 
 .recap-title {
@@ -135,9 +139,17 @@ onUnmounted(() => {
     height: auto;
     aspect-ratio: 16 / 9;
     width: calc(100% - 2rem);
+    max-width: 560px;
     margin: 0 auto;
     transform: none !important;
-    border-radius: 16px !important;
+    border-radius: 6px !important;
+  }
+  .recap-video {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 </style>
