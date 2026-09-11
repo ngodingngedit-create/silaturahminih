@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { EVENT_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
@@ -66,7 +67,7 @@ onUnmounted(() => stopAutoplay())
         </div>
 
         <div class="hero-actions">
-          <button class="btn btn-yellow" @click="router.push('/tickets')">BELI TIKET</button>
+          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">BELI TIKET</button>
           <button class="btn btn-white" @click="router.push('/lineup')">LIHAT LINEUP</button>
         </div>
       </div>
@@ -257,28 +258,26 @@ onUnmounted(() => stopAutoplay())
 }
 
 @media (max-width: 768px) {
-  .hero { padding: 120px 2rem 60px; min-height: 100vh; }
-  .hero-content { width: 100%; max-width: 900px; }
-  .content-inner { padding: 2rem; }
-  .logo-wrapper { margin-bottom: 2rem; }
+  .hero { padding: 5.25rem 1rem 9.5rem; min-height: auto; align-items: center; }
+  .hero-content { width: 100%; max-width: 100%; margin-top: 2.25rem; }
+  .content-inner { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+  .logo-wrapper { margin-bottom: 0; }
   .hero-logo {
-    max-width: min(550px, 90vw);
+    max-width: min(200px, 56vw);
     margin: 0 auto;
-    animation: float 8s ease-in-out infinite;
+    animation: float-mobile 6s ease-in-out infinite;
   }
-  .info-block { margin-bottom: 3rem; }
+  .info-block { margin-bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
   .info-block > * {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
     max-width: 100%;
   }
-  .hero-date { font-size: clamp(2.5rem, 8vw, 5.5rem); margin-bottom: 0.5rem; }
-  .event-year { font-size: 0.9rem; }
-  .hero-venue { font-size: 0.9rem; letter-spacing: 0.15em; margin-bottom: 2.5rem; }
-  .hero-slogan { font-size: 0.8rem; padding: 0.6rem 1.5rem; max-width: none; }
-  .hero-actions { flex-direction: row; gap: 1rem; align-items: center; justify-content: center; flex-wrap: nowrap; }
-  .hero-actions .btn { width: auto; min-width: 0; padding: 0.8rem 2.2rem; font-size: 0.9rem; white-space: nowrap; }
+  .hero-date { font-size: clamp(2rem, 11vw, 3rem); line-height: 0.95; text-align: center; margin-bottom: 0; }
+  .hero-slogan { font-size: 0.68rem; line-height: 1.6; padding: 0.6rem 1.1rem; max-width: 100%; text-align: center; }
+  .hero-actions { flex-direction: column; align-items: stretch; justify-content: center; gap: 0.6rem; width: min(280px, 100%); margin: 0 auto; }
+  .hero-actions .btn { width: 100%; min-width: 0; padding: 0.6rem 0.9rem; font-size: 0.7rem; white-space: nowrap; }
 }
 
 @keyframes float-mobile {

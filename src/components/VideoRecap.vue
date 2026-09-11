@@ -4,6 +4,25 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const sectionRef = ref(null);
 const scale = ref(0.85);
 const borderRadius = ref(24);
+const isMuted = ref(true);
+const desktopFrame = ref(null);
+const mobileFrame = ref(null);
+
+function postMute(frame, mute) {
+  try {
+    frame?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func: mute ? 'mute' : 'unMute', args: [] }),
+      '*'
+    );
+  } catch { /* ponytail: ignore cross-origin post errors */ }
+}
+
+function toggleMute() {
+  const next = !isMuted.value;
+  isMuted.value = next;
+  postMute(desktopFrame.value, next);
+  postMute(mobileFrame.value, next);
+}
 
 const updateScale = () => {
   if (!sectionRef.value) return;
@@ -41,14 +60,28 @@ onUnmounted(() => {
           borderRadius: `${borderRadius}px`
         }"
       >
-        <iframe 
-          class="recap-video"
-          src="https://www.youtube.com/embed/U-BK5xf04yg?autoplay=1&mute=1&loop=1&playlist=U-BK5xf04yg&controls=0&showinfo=0&rel=0&modestbranding=1" 
-          title="YouTube video player" 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        <iframe
+          ref="desktopFrame"
+          class="recap-video recap-desktop"
+          src="https://www.youtube.com/embed/U-BK5xf04yg?autoplay=1&mute=1&loop=1&playlist=U-BK5xf04yg&controls=0&showinfo=0&rel=0&modestbranding=1&enablejsapi=1"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen
         ></iframe>
+        <iframe
+          ref="mobileFrame"
+          class="recap-video recap-mobile"
+          src="https://www.youtube.com/embed/qx04Iu0GE-E?autoplay=1&mute=1&loop=1&playlist=qx04Iu0GE-E&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+          title="YouTube Shorts player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+        <!-- <button class="recap-mute" :class="{ off: isMuted }" @click="toggleMute" :aria-label="isMuted ? 'Nyalakan suara' : 'Matikan suara'">
+          <svg v-if="isMuted" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          <svg v-else viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button> -->
       </div>
     </div>
   </section>
@@ -84,9 +117,11 @@ onUnmounted(() => {
   height: 100%; /* Restored to full height */
   overflow: hidden;
   position: relative;
+  background: #000;
   transition: transform 0.1s ease-out, border-radius 0.1s ease-out;
   will-change: transform, border-radius;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
+  box-shadow: none;
 }
 .recap-video {
   position: absolute;
@@ -100,6 +135,25 @@ onUnmounted(() => {
   border: none;
   pointer-events: none;
 }
+.recap-mobile { display: none; }
+.recap-mute {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.recap-mute:hover { background: var(--color-primary); border-color: var(--color-primary); color: #000; }
 
 .recap-title {
   font-family: var(--font-heading);
@@ -137,19 +191,27 @@ onUnmounted(() => {
   }
   .video-container {
     height: auto;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 9 / 16;
     width: calc(100% - 2rem);
-    max-width: 560px;
+    max-width: 340px;
     margin: 0 auto;
     transform: none !important;
-    border-radius: 6px !important;
+    border-radius: 12px !important;
+    border: none;
+    box-shadow: none;
   }
-  .recap-video {
-    width: 100%;
-    height: 100%;
+  .recap-desktop { display: none; }
+  .recap-mobile {
+    display: block;
+    top: 50%;
+    left: 50%;
+    width: 280%;
+    height: 112%;
     min-height: 0;
     min-width: 0;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
+  .recap-chrome-mask { display: none; }
 }
 </style>

@@ -1,11 +1,55 @@
 <script setup>
-import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ticketCategories } from '../data/tickets.js'
+import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ticketCategories as fallbackTickets } from '../data/tickets.js'
+import { fetchEventBySlug, mapEventPayload } from '../services/eventApi.js'
+import { EVENT_SLUG } from '../utils/eventRoute.js'
 
 const router = useRouter()
+const route = useRoute()
 
-// Countdown timer to event (23 May 2027)
+const titleRef = ref(null)
+const titleOverflow = ref(false)
+
+function checkTitleOverflow() {
+  nextTick(() => {
+    const el = titleRef.value
+    if (!el) return
+    titleOverflow.value = el.scrollWidth > el.clientWidth + 4
+  })
+}
+
+const eventSlug = computed(() => route.params.slug || EVENT_SLUG)
+const eventData = ref(null)
+const eventLoading = ref(true)
+const eventError = ref('')
+
+const ticketList = computed(() => eventData.value?.tickets?.length ? eventData.value.tickets : fallbackTickets)
+const eventName = computed(() => eventData.value?.name || 'Blind Ticket SILATURAHMI 2027')
+const eventImage = computed(() => eventData.value?.imageUrl || '/konser1.jpg')
+const eventDateLabel = computed(() => {
+  if (!eventData.value?.startDate) return '23 May 2027'
+  const d = new Date(eventData.value.startDate + 'T00:00:00')
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+})
+const eventTimeLabel = computed(() => {
+  if (!eventData.value?.startTime) return '15:00 - 23:30 WIB'
+  const end = eventData.value.endTime ? ` - ${eventData.value.endTime}` : ''
+  return `${eventData.value.startTime}${end} ${eventData.value.zoneTime || 'WIB'}`
+})
+const eventVenueLabel = computed(() => {
+  if (!eventData.value?.locationName) return 'Gambir Expo, Jakarta'
+  const city = eventData.value.locationCity ? `, ${eventData.value.locationCity}` : ''
+  return `${eventData.value.locationName}${city}`
+})
+const eventMapUrl = computed(() => eventData.value?.locationMap || 'https://maps.google.com/?q=Gambir+Expo+Jakarta')
+const eventLocVenue = computed(() => eventData.value?.locationName || 'Gambir Expo')
+const eventLocCity = computed(() => eventData.value?.locationCity || 'Jakarta Pusat, Indonesia')
+const organizerName = computed(() => (eventData.value?.organizer || 'SILATURAHMI PRESENTS').toUpperCase())
+const organizerImage = computed(() => eventData.value?.organizerImage || '/silaturahmi.png')
+const maxBuyTicket = computed(() => eventData.value?.maxBuyTicket || 10)
+
+// Countdown timer to event start
 const countdown = ref({
   days: '00',
   hours: '00',
@@ -15,8 +59,16 @@ const countdown = ref({
 
 let timer = null
 
+function countdownTarget() {
+  if (eventData.value?.startDate) {
+    const t = eventData.value.startTime || '00:00'
+    return new Date(`${eventData.value.startDate}T${t.length === 5 ? t + ':00' : t}+07:00`).getTime()
+  }
+  return new Date('2027-05-23T15:00:00+07:00').getTime()
+}
+
 function updateCountdown() {
-  const targetDate = new Date('2027-05-23T15:00:00+07:00').getTime()
+  const targetDate = countdownTarget()
   const now = new Date().getTime()
   const difference = targetDate - now
 
@@ -34,6 +86,26 @@ function updateCountdown() {
     }
   }
 }
+
+async function loadEvent() {
+  eventLoading.value = true
+  eventError.value = ''
+  try {
+    const payload = await fetchEventBySlug(eventSlug.value)
+    eventData.value = mapEventPayload(payload)
+    if (eventData.value.tickets.length > 0) {
+      selectedTicket.value = eventData.value.tickets[0]
+    }
+  } catch (e) {
+    eventError.value = 'Gagal memuat data event, menampilkan data cadangan.'
+    eventData.value = null
+  } finally {
+    eventLoading.value = false
+    checkTitleOverflow()
+  }
+}
+
+watch(eventName, () => checkTitleOverflow())
 
 // Active Tab navigation: description (description+location+terms) vs tickets
 const activeTab = ref('description')
@@ -90,7 +162,7 @@ function toggleDescription() {
   isDescriptionExpanded.value = !isDescriptionExpanded.value
 }
 
-const selectedTicket = ref(ticketCategories[0])
+const selectedTicket = ref(fallbackTickets[0])
 const cart = ref({})
 const expandedTicket = ref(null)
 const isEditingCart = ref(false)
@@ -116,13 +188,15 @@ function onSheetGrabEnd() {
 }
 
 const qtyOf = (id) => cart.value[id] || 0
-const cartItems = computed(() => ticketCategories.filter(t => qtyOf(t.id) > 0).map(t => ({ ...t, qty: qtyOf(t.id), subtotal: t.price * qtyOf(t.id) })))
+const cartItems = computed(() => ticketList.value.filter(t => qtyOf(t.id) > 0).map(t => ({ ...t, qty: qtyOf(t.id), subtotal: t.price * qtyOf(t.id) })))
 const cartCount = computed(() => Object.values(cart.value).reduce((a, b) => a + b, 0))
 const cartTotal = computed(() => cartItems.value.reduce((a, b) => a + b.subtotal, 0))
 const cartTotalFormatted = computed(() => 'Rp ' + cartTotal.value.toLocaleString('id-ID'))
 
 function selectTicketCategory(ticket) {
+  if (!ticket.available) return
   selectedTicket.value = ticket
+  if (!qtyOf(ticket.id)) cart.value = { ...cart.value, [ticket.id]: 1 }
 }
 function toggleExpand(id) {
   expandedTicket.value = expandedTicket.value === id ? null : id
@@ -133,6 +207,9 @@ function addTicket(ticket) {
   cart.value = { ...cart.value, [ticket.id]: 1 }
 }
 function incQty(id) {
+  const t = ticketList.value.find((x) => x.id === id)
+  const cap = t?.maxBuy ?? maxBuyTicket.value ?? 10
+  if (qtyOf(id) >= cap) return
   cart.value = { ...cart.value, [id]: qtyOf(id) + 1 }
 }
 function decQty(id) {
@@ -161,6 +238,8 @@ function handleBottomAction() {
   if (cartCount.value === 0) return
   try {
     sessionStorage.setItem('silaturahmi_cart', JSON.stringify(cart.value))
+    sessionStorage.setItem('silaturahmi_catalog', JSON.stringify(ticketList.value))
+    sessionStorage.setItem('silaturahmi_event_id', String(eventData.value?.id || ''))
   } catch { /* ponytail: cart still in memory for same-session back nav */ }
   router.push('/personal-info')
 }
@@ -168,12 +247,36 @@ function handleBottomAction() {
 // Share modal toggle
 const isShareModalOpen = ref(false)
 const isCopied = ref(false)
+const isMoreOpen = ref(false)
+const moreWrap = ref(null)
+const chatUrl = 'https://wa.me/6281234567890?text=Halo%20Silaturahmi%20Festival,%20saya%20butuh%20bantuan%20tiket.'
+
+function toggleMore() {
+  isMoreOpen.value = !isMoreOpen.value
+}
+function closeMore() {
+  isMoreOpen.value = false
+}
+function openChat() {
+  closeMore()
+  window.open(chatUrl, '_blank', 'noopener')
+}
+function openShare() {
+  closeMore()
+  shareEvent()
+}
+function onMoreOutside(e) {
+  if (moreWrap.value && !moreWrap.value.contains(e.target)) closeMore()
+}
+function onMoreKey(e) {
+  if (e.key === 'Escape') closeMore()
+}
 
 function shareEvent() {
   if (navigator.share) {
     navigator.share({
-      title: 'SILATURAHMI FESTIVAL 2027',
-      text: 'Beli tiket Silaturahmi Festival 2027 sekarang!',
+      title: eventName.value,
+      text: `Beli tiket ${eventName.value} sekarang!`,
       url: window.location.href,
     }).catch(() => {})
   } else {
@@ -191,15 +294,32 @@ function copyLink() {
 }
 
 onMounted(() => {
+  loadEvent()
   updateCountdown()
   timer = setInterval(updateCountdown, 1000)
   updateIndicator()
+  checkTitleOverflow()
   window.addEventListener('resize', updateIndicator)
+  window.addEventListener('resize', checkTitleOverflow)
+  document.addEventListener('click', onMoreOutside)
+  document.addEventListener('keydown', onMoreKey)
+  document.body.classList.toggle('cart-sheet-open', showCartSheet.value)
+  if (showCartSheet.value) document.body.style.overflow = 'hidden'
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
+  window.removeEventListener('resize', checkTitleOverflow)
   window.removeEventListener('resize', updateIndicator)
+  document.removeEventListener('click', onMoreOutside)
+  document.removeEventListener('keydown', onMoreKey)
+  document.body.classList.remove('cart-sheet-open')
+  document.body.style.overflow = ''
+})
+
+watch(showCartSheet, (v) => {
+  document.body.classList.toggle('cart-sheet-open', v)
+  document.body.style.overflow = v ? 'hidden' : ''
 })
 </script>
 
@@ -211,7 +331,11 @@ onUnmounted(() => {
       <div class="container event-wide">
         <!-- Title & Countdown Header Row -->
         <div class="hero-top-bar">
-          <h1 class="event-title">Blind Ticket SILATURAHMI 2027</h1>
+          <h1 ref="titleRef" class="event-title" :class="{ marquee: titleOverflow }">
+            <span class="title-track">
+              <span>{{ eventName }}</span><span v-if="titleOverflow" aria-hidden="true">{{ eventName }}</span>
+            </span>
+          </h1>
           
           <div class="countdown-wrapper">
             <span class="countdown-label">Event starts in</span>
@@ -241,8 +365,8 @@ onUnmounted(() => {
           <!-- Banner Image Container -->
           <div class="banner-image-container">
             <img
-              src="/konser1.jpg"
-              alt="Silaturahmi Festival Banner"
+              :src="eventImage"
+              :alt="eventName"
               class="banner-img"
             />
           </div>
@@ -259,7 +383,7 @@ onUnmounted(() => {
                 </svg>
               </div>
               <div class="meta-content">
-                <span class="meta-value">23 May 2027</span>
+                <span class="meta-value">{{ eventDateLabel }}</span>
               </div>
             </div>
 
@@ -271,7 +395,7 @@ onUnmounted(() => {
                 </svg>
               </div>
               <div class="meta-content">
-                <span class="meta-value">15:00 - 23:30 WIB</span>
+                <span class="meta-value">{{ eventTimeLabel }}</span>
               </div>
             </div>
 
@@ -283,37 +407,47 @@ onUnmounted(() => {
                 </svg>
               </div>
               <div class="meta-content">
-                <span class="meta-value">Gambir Expo, Jakarta</span>
+                <span class="meta-value">{{ eventVenueLabel }}</span>
               </div>
             </div>
 
-            <div class="organizer-box">
-              <div class="org-avatar">
-                <img src="/silaturahmi.png" alt="Silaturahmi Logo" />
+            <div class="organizer-row">
+              <div class="organizer-box">
+                <div class="org-avatar">
+                  <img :src="organizerImage" alt="Organizer Logo" />
+                </div>
+                <div class="org-info">
+                  <span class="org-sub">Organized by</span>
+                  <span class="org-name">{{ organizerName }}</span>
+                </div>
               </div>
-              <div class="org-info">
-                <span class="org-sub">Organized by</span>
-                <span class="org-name">SILATURAHMI PRESENTS</span>
+              <div ref="moreWrap" class="more-wrap">
+                <button class="more-btn" @click.stop="toggleMore" aria-label="Opsi lain" :aria-expanded="isMoreOpen">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="5" r="1.8" />
+                    <circle cx="12" cy="12" r="1.8" />
+                    <circle cx="12" cy="19" r="1.8" />
+                  </svg>
+                </button>
+                <Transition name="more-pop">
+                  <Teleport to="body">
+                    <div v-if="isMoreOpen" class="more-backdrop" @click="closeMore">
+                      <div class="more-menu" @click.stop>
+                        <div class="more-grab" aria-hidden="true"><span></span></div>
+                        <p class="more-title">Opsi Event</p>
+                        <button class="more-item" @click="openChat">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                          <span>Chat</span>
+                        </button>
+                        <button class="more-item" @click="openShare">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
+                          <span>Share</span>
+                        </button>
+                      </div>
+                    </div>
+                  </Teleport>
+                </Transition>
               </div>
-            </div>
-
-            <!-- Action Buttons Row -->
-            <div class="meta-actions">
-              <button class="action-btn" @click="shareEvent" title="Bagikan Event">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="18" cy="5" r="3"></circle>
-                  <circle cx="6" cy="12" r="3"></circle>
-                  <circle cx="18" cy="19" r="3"></circle>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-              </button>
-              
-              <button class="action-btn" @click="scrollToSection('location')" title="Lokasi Map">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </button>
             </div>
           </div>
         </div>
@@ -356,7 +490,8 @@ onUnmounted(() => {
           <h2 class="section-heading">Description</h2>
         </div>
 
-        <div class="description-text-box" :class="{ collapsed: !isDescriptionExpanded }">
+        <div v-if="eventData?.description" class="description-text-box api-html" v-html="eventData.description"></div>
+        <div v-else class="description-text-box" :class="{ collapsed: !isDescriptionExpanded }">
           <p>
             3rd Edition <strong>SILATURAHMI FESTIVAL 2027</strong> is back as Indonesia's biggest street punk, garage rock, & underground music celebration! Prepare for a day of roaring distortion, raw energy, local punk anthems lining up the venue, and an unforgettable reunion of camaraderie.
           </p>
@@ -378,10 +513,12 @@ onUnmounted(() => {
           <h2 class="section-heading">Tickets</h2>
         </div>
 
+        <div v-if="eventLoading" class="tickets-loading">Memuat tiket...</div>
+        <p v-else-if="eventError" class="tickets-error">{{ eventError }}</p>
         <div class="tickets-layout">
           <div class="tickets-selection-grid">
             <div
-              v-for="ticket in ticketCategories"
+              v-for="ticket in ticketList"
               :key="ticket.id"
               class="ticket-option-card"
               :class="{ selected: selectedTicket.id === ticket.id }"
@@ -391,6 +528,7 @@ onUnmounted(() => {
                 <div class="toc-top">
                   <div class="toc-title-wrap">
                     <h3 class="toc-name">{{ ticket.name }}</h3>
+                    <span v-if="ticket.category" class="toc-category">{{ ticket.category }}</span>
                     <span class="toc-badge" :class="ticket.badgeClass">
                       <span class="toc-dot"></span>{{ ticket.status }}
                     </span>
@@ -492,12 +630,12 @@ onUnmounted(() => {
 
         <div class="location-box">
           <div class="loc-details">
-            <h3 class="loc-venue">Gambir Expo</h3>
-            <p class="loc-city">Jakarta Pusat, Indonesia</p>
+            <h3 class="loc-venue">{{ eventLocVenue }}</h3>
+            <p class="loc-city">{{ eventLocCity }}</p>
           </div>
-          <a 
-            href="https://maps.google.com/?q=Gambir+Expo+Jakarta" 
-            target="_blank" 
+          <a
+            :href="eventMapUrl"
+            target="_blank"
             class="open-map-btn"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -519,7 +657,8 @@ onUnmounted(() => {
           <h2 class="section-heading">Terms & Conditions</h2>
         </div>
 
-        <div class="terms-container">
+        <div v-if="eventData?.termCondition" class="description-text-box api-html" v-html="eventData.termCondition"></div>
+        <div v-else class="terms-container">
           <div class="terms-group">
             <h3 class="terms-subheading">General Rules</h3>
             <ul class="terms-list">
@@ -596,7 +735,15 @@ onUnmounted(() => {
             @touchmove.passive="onSheetGrabMove"
             @touchend="onSheetGrabEnd"
           ><span></span></div>
-          <h3 class="sheet-title">Tiket Dipilih</h3>
+          <div class="sheet-head">
+            <div>
+              <h3 class="sheet-title">Tiket Dipilih</h3>
+              <p class="sheet-sub">{{ cartCount }} tiket</p>
+            </div>
+            <button class="sheet-edit" @click="isEditingCart = !isEditingCart" :disabled="cartItems.length === 0">
+              {{ isEditingCart ? 'Selesai' : 'Edit' }}
+            </button>
+          </div>
           <div v-if="cartItems.length === 0" class="sheet-empty">Belum ada tiket dipilih.</div>
           <ul v-else class="sheet-list">
             <li v-for="item in cartItems" :key="item.id" class="sheet-item">
@@ -610,13 +757,17 @@ onUnmounted(() => {
                 <span class="sheet-item-name">{{ item.name }}</span>
                 <span class="sheet-item-meta">{{ item.qty }} × {{ item.priceFormatted }}</span>
               </div>
-              <span class="sheet-item-price">Rp {{ item.subtotal.toLocaleString('id-ID') }}</span>
+              <div class="sheet-item-right">
+                <span class="sheet-item-price">Rp {{ item.subtotal.toLocaleString('id-ID') }}</span>
+                <button v-if="isEditingCart" class="sheet-remove" @click="removeCartItem(item.id)">Hapus</button>
+              </div>
             </li>
           </ul>
           <div v-if="cartItems.length > 0" class="sheet-total">
             <span>Total</span>
             <strong>{{ cartTotalFormatted }}</strong>
           </div>
+          <button v-if="cartItems.length > 0 && isEditingCart" class="sheet-clear" @click="clearCart">Hapus Semua</button>
         </section>
       </div>
     </Transition>
@@ -683,6 +834,15 @@ onUnmounted(() => {
   color: var(--color-white);
   letter-spacing: -0.02em;
   margin: 0;
+}
+.title-track {
+  display: inline;
+  white-space: normal;
+}
+.title-track span { white-space: normal; }
+@keyframes title-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* COUNTDOWN STYLING */
@@ -799,12 +959,19 @@ onUnmounted(() => {
 }
 
 /* ORGANIZER BOX */
+.organizer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
 .organizer-box {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 0;
 }
 
 .org-avatar {
@@ -838,31 +1005,69 @@ onUnmounted(() => {
   color: var(--color-white);
 }
 
-/* META ACTIONS BUTTONS */
-.meta-actions {
-  display: flex;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-}
-
-.action-btn {
-  flex: 1;
-  height: 46px;
-  border-radius: 12px;
-  background: var(--color-primary);
-  color: var(--color-black);
+/* MORE MENU */
+.more-wrap { position: static; flex-shrink: 0; }
+.more-btn {
+  background: none;
   border: none;
+  padding: 0.35rem;
+  color: #fbda01;
+  cursor: pointer;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.more-btn:hover { color: var(--color-primary); background: rgba(255, 255, 255, 0.06); }
+.more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+}
+.more-menu {
+  width: min(340px, 100%);
+  background: var(--color-dark-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.more-grab { display: none; }
+.more-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0.25rem 0.5rem 0.5rem;
+}
+.more-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-white);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  text-align: left;
 }
-
-.action-btn:hover {
-  background: var(--color-primary);
-  transform: translateY(-2px);
-}
+.more-item svg { color: var(--color-primary); flex-shrink: 0; }
+.more-item:hover { background: rgba(255, 255, 255, 0.06); }
+.more-pop-enter-active, .more-pop-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.more-pop-enter-from, .more-pop-leave-to { opacity: 0; transform: translateY(-6px) scale(0.98); }
 
 /* STICKY TAB NAVIGATION BAR */
 .sticky-tabs-nav {
@@ -931,15 +1136,19 @@ onUnmounted(() => {
 }
 
 .content-section {
-  margin-bottom: 3.5rem;
+  margin-bottom: 1.25rem;
   scroll-margin-top: 170px;
+}
+
+.content-section:last-child {
+  margin-bottom: 0.5rem;
 }
 
 .section-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .section-icon {
@@ -959,6 +1168,28 @@ onUnmounted(() => {
   font-size: 1.05rem;
   line-height: 1.7;
   font-family: var(--font-body);
+}
+
+.api-html p { margin: 0 0 0.75rem; }
+.api-html ol, .api-html ul { padding-left: 1.25rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.tickets-loading {
+  color: rgba(255, 255, 255, 0.6);
+  padding: 1rem 0;
+}
+
+.tickets-error {
+  color: var(--color-secondary);
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+}
+
+.toc-category {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
 }
 
 .read-more-btn {
@@ -1426,11 +1657,12 @@ onUnmounted(() => {
   background: var(--color-dark-surface);
   border: 1px solid var(--color-dark-border);
   border-radius: 14px;
-  padding: 1.5rem 1.75rem;
+  padding: 1rem 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 0;
 }
 
 .loc-venue {
@@ -1471,7 +1703,7 @@ onUnmounted(() => {
 .terms-container {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 0.75rem;
 }
 
 .terms-group{
@@ -1509,8 +1741,10 @@ onUnmounted(() => {
 
 .bcb-container {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .bcb-top-row {
@@ -1521,6 +1755,7 @@ onUnmounted(() => {
 }
 
 .bcb-detail-btn {
+  display: none;
   background: none;
   border: none;
   color: #fbda01;
@@ -1659,12 +1894,14 @@ onUnmounted(() => {
   z-index: 200;
   background: rgba(0, 0, 0, 0.65);
   align-items: flex-end;
+  overscroll-behavior: contain;
 }
 
 .cart-sheet-card {
   width: 100%;
   max-height: 75vh;
   overflow: auto;
+  overscroll-behavior: contain;
   background: var(--color-dark-surface);
   border: 1px solid var(--color-dark-border);
   border-radius: 18px 18px 0 0;
@@ -1691,14 +1928,39 @@ onUnmounted(() => {
   background: rgba(255,255,255,0.3);
 }
 
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  margin: 0 0 0.75rem;
+}
 .sheet-title {
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 800;
   color: var(--color-white);
-  padding: 0 1.25rem;
-  margin: 0 0 0.75rem;
+  padding: 0;
+  margin: 0;
 }
+.sheet-sub {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0.2rem 0 0;
+}
+.sheet-edit {
+  background: transparent;
+  border: 1px solid var(--color-dark-border);
+  color: var(--color-primary);
+  border-radius: 8px;
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sheet-edit:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .sheet-empty {
   color: rgba(255,255,255,0.45);
@@ -1745,11 +2007,40 @@ onUnmounted(() => {
 }
 
 .sheet-item-price {
-  margin-left: auto;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-white);
   flex-shrink: 0;
+  white-space: nowrap;
+}
+.sheet-item-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.sheet-remove {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.sheet-clear {
+  display: block;
+  width: calc(100% - 2.5rem);
+  margin: 0.9rem 1.25rem 0;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+  border-radius: 8px;
+  padding: 0.55rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .sheet-total {
@@ -1806,12 +2097,18 @@ onUnmounted(() => {
   }
 
   .banner-image-container {
-    height: 220px;
+    height: auto;
+    min-height: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   .banner-img {
     position: relative;
-    height: 220px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
 
   .tickets-layout {
@@ -1822,7 +2119,6 @@ onUnmounted(() => {
     position: static;
   }
 }
-
 @media (max-width: 640px) {
   .event-detail-page .container.event-wide {
     padding-left: 1rem;
@@ -1830,7 +2126,7 @@ onUnmounted(() => {
   }
 
   .event-hero-header {
-    padding: 6.5rem 0 1rem 0;
+    padding: 5.25rem 0 1rem 0;
   }
 
   .event-hero-header .container.event-wide {
@@ -1845,57 +2141,78 @@ onUnmounted(() => {
 
   .banner-image-container {
     order: 1;
+    height: auto;
+    min-height: 0;
     border-radius: 10px;
-    height: 200px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   .banner-img {
-    height: 200px;
+    position: relative;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
   }
 
   .hero-top-bar {
     order: 2;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.02rem;
-    margin-bottom: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    margin: 0.75rem 0 0.5rem;
   }
 
   .event-meta-card {
     order: 3;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: var(--color-dark-surface);
+    border: none;
+    background: transparent;
     height: auto;
     min-height: 0;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    padding: 1rem;
-    gap: 0.7rem;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    gap: 0.4rem;
   }
 
   .event-title {
-    font-size: 1.1rem;
-    line-height: 1.1;
-    text-align: left;
-  }
-
-  .countdown-wrapper {
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .countdown-boxes {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .cd-box {
+    flex: 1;
     min-width: 0;
+    max-width: 100%;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
   }
+  .event-title .title-track {
+    display: inline-flex;
+    white-space: nowrap;
+    max-width: none;
+    will-change: transform;
+  }
+  .event-title .title-track span { white-space: nowrap; }
+  .event-title.marquee .title-track { animation: title-marquee 12s linear infinite; }
+  .event-title.marquee .title-track span { padding-right: 2rem; }
 
-  .cd-num { font-size: 0.95rem; }
-  .cd-txt { font-size: 0.55rem; }
+  .countdown-wrapper { display: none; }
+
+  .meta-item { gap: 0.6rem; }
+  .meta-icon { width: 28px; height: 28px; }
+  .organizer-row { gap: 0.5rem; padding-top: 0.6rem; }
+  .organizer-box { gap: 0.6rem; }
+  .more-btn { padding: 0.4rem; }
+  .more-menu { min-width: 180px; }
+
+  .countdown-label,
+  .countdown-boxes,
+  .cd-box,
+  .cd-num,
+  .cd-txt { display: none; }
 
   .sticky-tabs-nav {
     top: 60px;
@@ -1906,8 +2223,8 @@ onUnmounted(() => {
   }
 
   .meta-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   .meta-value {
@@ -2021,6 +2338,12 @@ onUnmounted(() => {
     align-items: flex-start;
   }
 
+  .bcb-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
   .bcb-top-row {
     width: 100%;
   }
@@ -2034,6 +2357,7 @@ onUnmounted(() => {
   }
 
   .bcb-detail-btn {
+    display: block;
     font-size: 0.68rem;
   }
 
@@ -2042,8 +2366,9 @@ onUnmounted(() => {
   }
 
   .view-tickets-btn {
-    padding: 0.55rem 1rem;
-    font-size: 0.78rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
     white-space: nowrap;
   }
 

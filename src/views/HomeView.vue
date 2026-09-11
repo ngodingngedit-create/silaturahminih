@@ -7,6 +7,7 @@ import SpotifySection from '../components/SpotifySection.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { lineupVols } from '../data/lineup.js'
+import { EVENT_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
@@ -268,7 +269,7 @@ const getSpotifySrc = (url) => {
           </div>
 
           <div class="tt-actions">
-            <button class="btn btn-pink btn-glitch" @click="router.push('/tickets')">
+            <button class="btn btn-pink btn-glitch" @click="router.push(EVENT_PATH)">
               LIHAT INFO TIKET 
               <span class="arrow">→</span>
             </button>
@@ -1128,6 +1129,7 @@ section {
 }
 
 @media (max-width: 768px) {
+  section .btn { padding: 0.6rem 1.1rem; font-size: 0.7rem; }
   .scroll-area { display: none !important; }
   .artist-scroller-container { margin: 1rem -1rem; width: calc(100% + 2rem); }
   .artist-track { padding: 1rem 2rem; gap: 0.9rem; }

@@ -77,7 +77,7 @@
           <div class="footer-col">
             <h3 class="footer-heading">INFO EVENT</h3>
             <div class="footer-info">
-              <p>Silaturahmi Vol 3 kembali hadir pada 17 April 2026 di Pamulang Square - Tangerang Selatan. Kembali mempererat tali kasih dan persaudaraan setelah merayakan hari raya idul fitri. sampai bertemu!</p>
+              <p>Silaturahmi Vol 3 kembali hadir pada 10 April 2027 di Pamulang Square - Tangerang Selatan. Kembali mempererat tali kasih dan persaudaraan setelah merayakan hari raya idul fitri. sampai bertemu!</p>
             </div>
           </div>
 
@@ -118,15 +118,16 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { EVENT_PATH, isTicketPagePath } from '../utils/eventRoute.js'
 
 const route = useRoute()
-const isTicketPage = computed(() => route.path === '/tickets' || route.path === '/personal-info')
+const isTicketPage = computed(() => isTicketPagePath(route.path))
 
 const navLinks = [
   { to: '/', label: 'Beranda' },
   { to: '/lineup', label: 'Lineup' },
   { href: 'https://pasarbarengbareng.com/', label: 'Merch' },
-  { to: '/tickets', label: 'Tiket' },
+  { to: EVENT_PATH, label: 'Tiket' },
   { to: '/gallery', label: 'Galeri' },
 ]
 

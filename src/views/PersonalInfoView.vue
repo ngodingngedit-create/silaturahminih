@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ticketCategories } from '../data/tickets.js'
+import { EVENT_PATH } from '../utils/eventRoute.js'
+import { createTransaction } from '../services/eventApi.js'
 
 const PAY_SECONDS = 15 * 60
 const remaining = ref(PAY_SECONDS)
@@ -18,6 +20,8 @@ const router = useRouter()
 const buyer = ref({ name: '', email: '', phone: '', phoneCode: '+62' })
 const buyerOpen = ref(true)
 const cart = ref({})
+const catalogList = ref(ticketCategories)
+const eventId = ref(0)
 const vouchers = ref([''])
 const appliedVouchers = ref([])
 const voucherMsg = ref('')
@@ -30,6 +34,7 @@ const submitted = ref(false)
 const openOwner = ref(null)
 const submitMsg = ref('')
 const submitError = ref('')
+const submitting = ref(false)
 const showSummary = ref(false)
 const summaryDragY = ref(0)
 const summaryDragging = ref(false)
@@ -63,6 +68,13 @@ function loadCart() {
   try {
     const raw = sessionStorage.getItem('silaturahmi_cart')
     if (raw) cart.value = JSON.parse(raw) || {}
+    const rawCat = sessionStorage.getItem('silaturahmi_catalog')
+    if (rawCat) catalogList.value = JSON.parse(rawCat) || ticketCategories
+    const rawEid = sessionStorage.getItem('silaturahmi_event_id')
+    if (rawEid) eventId.value = Number(rawEid) || 0
+    if (!eventId.value && catalogList.value.length) {
+      eventId.value = Number(catalogList.value[0].eventId) || 0
+    }
   } catch { cart.value = {} }
 }
 
@@ -80,7 +92,7 @@ onUnmounted(() => {
 
 const catalog = computed(() => {
   const map = {}
-  ticketCategories.forEach(t => { map[t.id] = t })
+  catalogList.value.forEach(t => { map[String(t.id)] = t })
   return map
 })
 
@@ -106,7 +118,7 @@ const emailValid = computed(() => emailOk(buyer.value.email))
 const phoneValid = computed(() => phoneOk(buyer.value.phone))
 const buyerValid = computed(() => buyer.value.name.trim().length >= 3 && emailValid.value && phoneValid.value)
 const ownersValid = computed(() => ownerSlots.value.every(s => ownerValid(s.key)))
-const canSubmit = computed(() => buyerValid.value && ownersValid.value && cartItems.value.length > 0)
+const canSubmit = computed(() => buyerValid.value && ownersValid.value && cartItems.value.length > 0 && !submitting.value)
 
 function toggleOwner(key) {
   openOwner.value = openOwner.value === key ? null : key
@@ -130,7 +142,7 @@ function removeVoucher(code) {
   appliedVouchers.value = appliedVouchers.value.filter(v => v !== code)
 }
 
-function submitOrder() {
+async function submitOrder() {
   submitted.value = true
   submitError.value = ''
   submitMsg.value = ''
@@ -148,18 +160,98 @@ function submitOrder() {
     submitError.value = 'Lengkapi data semua Pemilik Tiket.'
     return
   }
+  const digits = (v) => (v || '').replace(/\D/g, '')
+  const buyerPhone = digits(buyer.value.phoneCode + buyer.value.phone)
+  const firstTicketId = Number(cartItems.value[0]?.ticketId) || Number(cartItems.value[0]?.id) || 0
+  const identities = [
+    {
+      nik: '',
+      full_name: buyer.value.name.trim(),
+      email: buyer.value.email.trim(),
+      countryCode: '',
+      no_telp: buyerPhone,
+      is_pemesan: 1,
+      identity_type_id: 1,
+      event_ticket_id: firstTicketId,
+    },
+    ...ownerSlots.value.map(s => ({
+      nik: '',
+      full_name: ownerName(s.key).trim(),
+      email: ownerEmail(s.key).trim(),
+      countryCode: '',
+      no_telp: digits(ownerPhoneCode(s.key) + ownerPhone(s.key)),
+      is_pemesan: 0,
+      identity_type_id: 1,
+      event_ticket_id: Number(s.ticket.ticketId) || Number(s.ticket.id) || 0,
+    })),
+  ]
+  const tickets = cartItems.value.map(item => {
+    const tid = Number(item.ticketId) || Number(item.id) || 0
+    const fee = Number(item.fee) || 0
+    return {
+      id: tid,
+      event_id: Number(eventId.value) || Number(item.eventId) || 0,
+      event_ticket_id: tid,
+      price: Number(item.price) || 0,
+      ticket_fee: fee,
+      name: item.name,
+      subtotal_price: Number(item.price) * Number(item.qty),
+      qty_ticket: Number(item.qty),
+      payment_status: 'pending',
+      event_session_id: item.eventSessionId ?? null,
+      is_insurance: 0,
+      insurance_amount: 0,
+      insurance_require: 0,
+      is_bundling: 0,
+      bundling_qty: 0,
+    }
+  })
+  const payload = {
+    user_id: null,
+    event_id: Number(eventId.value) || Number(cartItems.value[0]?.eventId) || 0,
+    admin_fee: 0,
+    payment_method: '4',
+    grandtotal: cartTotal.value,
+    ppn_type: 'percentage',
+    ppn: 0,
+    ppn_amount: 0,
+    is_insurance: 0,
+    insurance_amount: 0,
+    insurance_total: 0,
+    insurance_required: 0,
+    identities,
+    tickets,
+    bank_code: '',
+    expiration_date: new Date(Date.now() + Math.max(0, remaining.value) * 1000).toISOString(),
+    vouchers: appliedVouchers.value,
+    is_merch: 0,
+  }
+  submitting.value = true
   try {
-    sessionStorage.setItem('silaturahmi_order', JSON.stringify({
-      buyer: buyer.value, items: cartItems.value, vouchers: appliedVouchers.value,
-      owners: ownerSlots.value.map(s => ({ ticket: s.ticket.name, name: ownerName(s.key), email: ownerEmail(s.key), phone: ownerPhone(s.key) })),
-      total: cartTotal.value, ts: Date.now()
-    }))
-  } catch { /* ponytail: ignore storage failure, order still shown */ }
-  submitMsg.value = `Pesanan ${cartCount.value} tiket (${fmt(cartTotal.value)}) atas nama ${buyer.value.name} tercatat.`
+    try {
+      sessionStorage.setItem('silaturahmi_order', JSON.stringify({
+        buyer: buyer.value, items: cartItems.value, vouchers: appliedVouchers.value,
+        owners: ownerSlots.value.map(s => ({ ticket: s.ticket.name, name: ownerName(s.key), email: ownerEmail(s.key), phone: ownerPhone(s.key) })),
+        total: cartTotal.value, ts: Date.now()
+      }))
+    } catch { /* ponytail: ignore storage failure, order still shown */ }
+    const res = await createTransaction(payload)
+    const d = res?.data ?? res ?? {}
+    const xenditUrl = d.xendit_url || d.xenditUrl || d.payment_url || d.invoice_url || res?.xendit_url
+    if (xenditUrl) {
+      window.location.href = xenditUrl
+      return
+    }
+    submitMsg.value = `Pesanan ${cartCount.value} tiket (${fmt(cartTotal.value)}) atas nama ${buyer.value.name} tercatat.`
+  } catch (e) {
+    submitError.value = e?.message || 'Gagal membuat transaksi. Coba lagi.'
+  } finally {
+    submitting.value = false
+  }
 }
 
 function backToTickets() {
-  router.push('/tickets')
+  router.push(EVENT_PATH)
 }
 </script>
 
@@ -334,10 +426,12 @@ function backToTickets() {
     <Transition name="pi-bottom">
       <div v-if="cartItems.length && !showSummary" class="pi-bottombar">
         <div class="container pi-wide pi-bottom-inner">
-          
+          <div class="pi-pay-timer">
+            <span class="pi-pay-label">Sisa waktu pembayaran</span>
+            <span class="pi-pay-time">{{ countdownText }}</span>
+          </div>
           <div class="pi-pay-action">
-           
-            <button class="btn btn-yellow pi-pay-btn" :disabled="!canSubmit" @click="submitOrder">Bayar Sekarang</button>
+            <button class="btn btn-yellow pi-pay-btn" :disabled="!canSubmit || submitting" @click="submitOrder">{{ submitting ? 'Memproses...' : 'Bayar Sekarang' }}</button>
           </div>
         </div>
       </div>
@@ -647,6 +741,7 @@ function backToTickets() {
   padding-bottom: 0.8rem;
 }
 
+.pi-pay-timer { display: flex; flex-direction: column; gap: 0.15rem; }
 .pi-pay-label { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); }
 .pi-pay-time { font-family: var(--font-heading); font-size: 1.6rem; letter-spacing: 0.05em; color: var(--color-primary); line-height: 1; }
 .pi-pay-action { display: flex; align-items: center; gap: 0.75rem; }
@@ -723,6 +818,7 @@ function backToTickets() {
   .pi-card-summary { display: none; }
   .pi-bottombar { border-radius: 16px 16px 0 0; overflow: hidden; }
   .pi-bottom-inner { flex-direction: row; align-items: center; gap: 0.6rem; padding: 0.6rem 0.9rem; }
+  .pi-pay-timer { display: none; }
   .pi-pay-label { font-size: 0.62rem; }
   .pi-pay-time { font-size: 1.15rem; }
   .pi-pay-action { gap: 0.5rem; flex: 1; justify-content: flex-end; }

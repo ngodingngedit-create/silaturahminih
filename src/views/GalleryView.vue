@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { defaultGalleryPhotos } from '../data/gallery.js'
 
 const STORAGE_KEY = 'silaturahmi_gallery'
@@ -37,6 +37,42 @@ function loadPhotos() {
 const photos = ref(loadPhotos())
 const displayPhotos = computed(() => photos.value.length > 0 ? photos.value : defaultGalleryPhotos)
 const showForm = ref(false)
+const sheetDragY = ref(0)
+const sheetDragging = ref(false)
+let sheetDragStartY = 0
+
+function onSheetGrabStart(e) {
+  sheetDragging.value = true
+  sheetDragStartY = e.touches ? e.touches[0].clientY : e.clientY
+}
+function onSheetGrabMove(e) {
+  if (!sheetDragging.value) return
+  const y = e.touches ? e.touches[0].clientY : e.clientY
+  sheetDragY.value = Math.max(0, y - sheetDragStartY)
+}
+function onSheetGrabEnd() {
+  if (!sheetDragging.value) return
+  sheetDragging.value = false
+  if (sheetDragY.value > 110) showForm.value = false
+  sheetDragY.value = 0
+}
+function closeForm() {
+  showForm.value = false
+  sheetDragY.value = 0
+  sheetDragging.value = false
+}
+watch(showForm, (v) => {
+  document.body.classList.toggle('up-sheet-open', v)
+  document.body.style.overflow = v ? 'hidden' : ''
+})
+onMounted(() => {
+  document.body.classList.toggle('up-sheet-open', showForm.value)
+  if (showForm.value) document.body.style.overflow = 'hidden'
+})
+onUnmounted(() => {
+  document.body.classList.remove('up-sheet-open')
+  document.body.style.overflow = ''
+})
 const form = ref({ caption: '', ig: '' })
 const fileInput = ref(null)
 const previewUrl = ref(null)
@@ -137,17 +173,38 @@ function closeLightbox() { lightbox.value = null }
   </section>
 
   <!-- Upload Form (collapsible) -->
-  <Transition name="slide-down">
-    <section v-if="showForm" class="upload-panel">
-      <div class="container">
+  <Transition name="up-modal">
+    <div v-if="showForm" class="up-backdrop" @click.self="closeForm">
+      <section
+        class="upload-panel"
+        :style="sheetDragY ? { transform: `translateY(${sheetDragY}px)` } : null"
+        :class="{ dragging: sheetDragging }"
+      >
+        <div
+          class="up-grab"
+          @mousedown="onSheetGrabStart"
+          @mousemove="onSheetGrabMove"
+          @mouseup="onSheetGrabEnd"
+          @mouseleave="onSheetGrabEnd"
+          @touchstart.passive="onSheetGrabStart"
+          @touchmove.passive="onSheetGrabMove"
+          @touchend="onSheetGrabEnd"
+        ><span></span></div>
         <div class="up-inner">
+          <button type="button" class="up-close" @click.stop="closeForm" aria-label="Tutup">✕</button>
           <h2 class="up-title">ABADIIN MOMEN LO 🤘</h2>
           <div class="up-grid">
             <!-- File Drop -->
             <div class="drop-zone" :class="{ 'has-img': previewUrl }" @click="fileInput.click()">
               <img v-if="previewUrl" :src="previewUrl" class="drop-preview" alt="preview" />
               <div v-else class="drop-inner">
-                <span class="drop-icon">🖼️</span>
+                <span class="drop-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="m21 15-5-5L5 21" />
+                  </svg>
+                </span>
                 <span>Pilih foto</span>
                 <small>JPG / PNG / WEBP — maks 5MB</small>
               </div>
@@ -165,7 +222,11 @@ function closeLightbox() { lightbox.value = null }
               <div class="up-field">
                 <label class="up-label">USERNAME INSTAGRAM *</label>
                 <div class="ig-wrap">
-                  <span class="ig-at">@</span>
+                  <span class="ig-at" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    </svg>
+                  </span>
                   <input v-model="form.ig" type="text" maxlength="30"
                     placeholder="username_kamu" class="up-input ig-in" />
                 </div>
@@ -178,8 +239,8 @@ function closeLightbox() { lightbox.value = null }
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </Transition>
 
   <!-- Success toast -->
@@ -277,13 +338,42 @@ function closeLightbox() { lightbox.value = null }
 .submit-btn.sm { font-size: 0.78rem; padding: 0.6rem 1.5rem; }
 
 /* ---- Upload Panel ---- */
+.up-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
 .upload-panel {
   background: var(--color-dark-surface);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  padding: 3rem 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  width: min(880px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1.75rem;
 }
-
-.up-inner { max-width: 800px; }
+.upload-panel.dragging { transition: none; }
+.up-grab { display: none; }
+.up-inner { max-width: 800px; position: relative; z-index: 1; }
+.up-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--color-white);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+}
 .up-title {
   font-size: 1.4rem;
   color: var(--color-primary);
@@ -314,7 +404,7 @@ function closeLightbox() { lightbox.value = null }
   display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
   color: rgba(255,255,255,0.4); font-size: 0.9rem; text-align: center; padding: 1rem;
 }
-.drop-icon { font-size: 2.5rem; }
+.drop-icon { display: inline-flex; color: rgba(255,255,255,0.5); }
 
 .up-fields { display: flex; flex-direction: column; gap: 1rem; }
 .up-field { display: flex; flex-direction: column; gap: 0.3rem; position: relative; }
@@ -353,7 +443,8 @@ function closeLightbox() { lightbox.value = null }
   border-right: none;
   color: var(--color-primary);
   padding: 0.75rem 0.8rem;
-  font-family: var(--font-heading);
+  display: inline-flex;
+  align-items: center;
 }
 .ig-in { flex: 1; }
 
@@ -609,8 +700,11 @@ function closeLightbox() { lightbox.value = null }
 .lb-date { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
 
 /* Transitions */
-.slide-down-enter-active, .slide-down-leave-active { transition: all 0.35s ease; max-height: 600px; overflow: hidden; }
-.slide-down-enter-from, .slide-down-leave-to { max-height: 0; opacity: 0; }
+.up-modal-enter-active, .up-modal-leave-active { transition: opacity 0.3s ease; }
+.up-modal-enter-from, .up-modal-leave-to { opacity: 0; }
+.up-modal-enter-active .upload-panel { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.up-modal-leave-active .upload-panel { transition: transform 0.3s ease-in; }
+.up-modal-enter-from .upload-panel, .up-modal-leave-to .upload-panel { transform: translateY(30px) scale(0.98); }
 
 .toast-enter-active, .toast-leave-active { transition: all 0.3s; }
 .toast-enter-from, .toast-leave-to { opacity: 0; transform: translateX(-50%) translateY(20px); }
@@ -620,8 +714,51 @@ function closeLightbox() { lightbox.value = null }
 
 /* Responsive */
 @media (max-width: 700px) {
+  .up-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .upload-panel {
+    width: 100%;
+    max-height: 88vh;
+    border-radius: 18px 18px 0 0;
+    border-bottom: none;
+    padding: 0 1rem 1.5rem;
+    touch-action: pan-y;
+  }
+  .up-modal-enter-from .upload-panel, .up-modal-leave-to .upload-panel { transform: translateY(100%); }
+  .up-grab {
+    display: block;
+    padding: 0.6rem;
+    cursor: grab;
+    touch-action: none;
+  }
+  .up-grab span {
+    display: block;
+    width: 44px;
+    height: 5px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.3);
+  }
+  .up-inner { padding: 0 0.25rem; }
   .up-grid { grid-template-columns: 1fr; }
   .drop-zone { aspect-ratio: 16/9; }
   .polaroid-wall { gap: 2.5rem 1rem; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+</style>
+
+<style>
+body.up-sheet-open .mobile-bottomnav {
+  transform: translateY(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  body.up-sheet-open .navbar {
+    transform: translateX(-50%) translateY(-140%);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 </style>
