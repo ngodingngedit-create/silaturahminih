@@ -116,7 +116,8 @@ function closeArtist() {
             </div>
           </div>
           <div v-else class="lu-playlist">
-            <iframe :src="selected.spotify" width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <iframe v-if="selected.spotify" :src="selected.spotify" width="100%" height="352" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <p v-else class="lu-about-text">Playlist Spotify segera hadir.</p>
           </div>
         </div>
       </div>

@@ -166,9 +166,9 @@ function closeLightbox() { lightbox.value = null }
 <template>
   <section class="gallery-top">
     <div class="container gallery-top-inner">
-      <button class="submit-btn" @click="showForm = !showForm">
+      <!-- <button class="submit-btn" @click="showForm = !showForm">
         {{ showForm ? '✕ TUTUP FORM' : 'KIRIM KENANGAN LO' }}
-      </button>
+      </button> -->
     </div>
   </section>
 

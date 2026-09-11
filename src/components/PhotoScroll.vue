@@ -43,7 +43,7 @@ function getTapePos(id) {
         <h2 class="ps-title">GALERI KENANGAN</h2>
       </div>
       <RouterLink to="/gallery" class="ps-cta">
-        LIHAT SEMUA & UPLOAD →
+        LIHAT SEMUA →
       </RouterLink>
     </div>
 

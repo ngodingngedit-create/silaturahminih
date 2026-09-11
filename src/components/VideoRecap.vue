@@ -17,6 +17,21 @@ function postMute(frame, mute) {
   } catch { /* ponytail: ignore cross-origin post errors */ }
 }
 
+function postPlay(frame) {
+  try {
+    frame?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
+      '*'
+    );
+  } catch { /* ponytail: ignore cross-origin post errors */ }
+}
+
+function tryAutoplay() {
+  postMute(desktopFrame.value, true);
+  postMute(mobileFrame.value, true);
+  postPlay(desktopFrame.value);
+  postPlay(mobileFrame.value);
+}
 function toggleMute() {
   const next = !isMuted.value;
   isMuted.value = next;
@@ -35,12 +50,17 @@ const updateScale = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('scroll', updateScale);
+  window.addEventListener('scroll', updateScale, { passive: true });
   updateScale();
+  tryAutoplay();
+  window.addEventListener('pointerdown', tryAutoplay);
+  window.addEventListener('touchstart', tryAutoplay, { passive: true });
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateScale);
+  window.removeEventListener('pointerdown', tryAutoplay);
+  window.removeEventListener('touchstart', tryAutoplay);
 });
 </script>
 
@@ -49,7 +69,7 @@ onUnmounted(() => {
     <div class="recap-header">
       <div class="container header-content">
         <h2 class="recap-title">REKAP <span class="accent">2026</span></h2>
-        <p class="recap-desc">Momen gila di Silaturahmi Vol.2. Kita ulang lagi di 2027!</p>
+        <p class="recap-desc">MOMEN GILA DI SILATURAHMI VOL.2. KITA ULANG LAGI DI 2027!</p>
       </div>
     </div>
     <div class="sticky-container">
@@ -167,14 +187,16 @@ onUnmounted(() => {
 }
 .recap-desc {
   color: rgba(255,255,255,0.7);
-  font-size: 1.2rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   max-width: 600px;
   margin: 0 auto;
 }
 @media (max-width: 768px) {
   .video-recap-wrapper {
-    height: auto;
-    padding-bottom: 3rem;
+    height: 250vh;
+    padding-bottom: 0;
   }
   .recap-header {
     padding-top: 0;
@@ -185,18 +207,22 @@ onUnmounted(() => {
     font-size: 3rem;
   }
   .sticky-container {
-    position: relative;
-    height: auto;
-    display: block;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
   .video-container {
-    height: auto;
-    aspect-ratio: 9 / 16;
-    width: calc(100% - 2rem);
-    max-width: 340px;
-    margin: 0 auto;
-    transform: none !important;
-    border-radius: 12px !important;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    max-width: none;
+    margin: 0;
+    transform-origin: center;
+    border-radius: 0 !important;
     border: none;
     box-shadow: none;
   }
@@ -205,10 +231,10 @@ onUnmounted(() => {
     display: block;
     top: 50%;
     left: 50%;
-    width: 280%;
-    height: 112%;
-    min-height: 0;
-    min-width: 0;
+    width: 177.78vh;
+    height: 100vh;
+    min-height: 100vh;
+    min-width: 177.78vh;
     transform: translate(-50%, -50%);
     pointer-events: none;
   }

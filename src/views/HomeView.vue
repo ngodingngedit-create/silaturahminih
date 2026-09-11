@@ -11,7 +11,10 @@ import { EVENT_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
-const featuredArtists = (lineupVols.find(v => v.id === 'vol2')?.artists || []).map(a => ({
+const featuredArtists = [
+  ...(lineupVols.find(v => v.id === 'vol1')?.artists || []),
+  ...(lineupVols.find(v => v.id === 'vol2')?.artists || []),
+].map(a => ({
   ...a,
   description: a.about,
 }))
@@ -21,15 +24,21 @@ const displayArtists = [...featuredArtists, ...featuredArtists]
 const trackRef = ref(null)
 const isHovered = ref(false)
 let animationId = null
-let speed = 0.6 // Slower loop speed
+let speed = 0.5
+let pos = 0
+
+const syncPos = () => {
+  if (trackRef.value) pos = trackRef.value.scrollLeft
+}
 
 const startLoop = () => {
   const loop = () => {
     if (!isHovered.value && trackRef.value) {
-      trackRef.value.scrollLeft += speed
-      if (trackRef.value.scrollLeft >= trackRef.value.scrollWidth / 2) {
-        trackRef.value.scrollLeft = 0
+      pos += speed
+      if (pos >= trackRef.value.scrollWidth / 2 - 1) {
+        pos = 0
       }
+      trackRef.value.scrollLeft = pos
     }
     animationId = requestAnimationFrame(loop)
   }
@@ -118,8 +127,7 @@ const getSpotifySrc = (url) => {
   <section class="teaser-lineup">
     <!-- Vol 2 -->
     <div class="container">
-      <h2 class="teaser-title">LINEUP <span class="accent">VOL 2</span></h2>
-      <p class="teaser-sub">Klik card buat lihat detailnya. Untuk Lineup Vol 1 kamu bisa liat di page Lineup.</p>
+      <h2 class="teaser-title">SILATURAHMI <span class="accent">SEBELUMNYA</span></h2>
     </div>
 
     <div class="container full-bleed">
@@ -135,7 +143,7 @@ const getSpotifySrc = (url) => {
           </button>
         </div>
 
-        <div class="artist-track" ref="trackRef">
+        <div class="artist-track" ref="trackRef" @scroll="syncPos">
           <div
             v-for="(artist, i) in displayArtists"
             :key="i"
@@ -222,7 +230,8 @@ const getSpotifySrc = (url) => {
             </div>
           </div>
           <div v-else class="home-playlist">
-            <iframe :src="getSpotifySrc(selectedArtist.spotify)" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <iframe v-if="selectedArtist.spotify" :src="getSpotifySrc(selectedArtist.spotify)" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <p v-else class="home-about-text">Playlist Spotify segera hadir.</p>
           </div>
         </div>
       </div>
@@ -241,9 +250,6 @@ const getSpotifySrc = (url) => {
         <div class="tt-content">
           <div class="section-label">DAPETIN TIKETNYA</div>
           <h2 class="teaser-title custom-hardcore-font">TIKET <span class="accent">TERSEDIA</span></h2>
-          <p class="teaser-sub">
-            Mempererat tali kasih & persaudaraan
-          </p>
           
           <div class="tt-prices">
             <div class="price-box featured">
@@ -311,7 +317,7 @@ const getSpotifySrc = (url) => {
       <div class="vibe-poster">
         <div class="stencil-wrap">
           <h2 class="vibe-quote">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</h2>
-          <div class="stencil-shadow">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
+          
         </div>
         
         <div class="vibe-actions">
@@ -391,7 +397,7 @@ section {
 
 .artist-track {
   display: flex;
-  gap: 2rem;
+  gap: 0.6rem;
   overflow-x: auto;
   scroll-behavior: auto;
   scrollbar-width: none;
@@ -881,22 +887,7 @@ section {
   white-space: nowrap;
 }
 
-.stencil-shadow {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 4.5vw, 2.5rem);
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(0,0,0,0.2);
-  line-height: 1;
-  width: 100%;
-  z-index: 1;
-  user-select: none;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
+
 
 /* Sticker Buttons */
 .vibe-actions {
@@ -1130,6 +1121,8 @@ section {
 
 @media (max-width: 768px) {
   section .btn { padding: 0.6rem 1.1rem; font-size: 0.7rem; }
+  .teaser-title { font-size: 1.45rem; white-space: nowrap; }
+  .teaser-lineup .teaser-title { font-size: 1.45rem; white-space: nowrap; }
   .scroll-area { display: none !important; }
   .artist-scroller-container { margin: 1rem -1rem; width: calc(100% + 2rem); }
   .artist-track { padding: 1rem 2rem; gap: 0.9rem; }
