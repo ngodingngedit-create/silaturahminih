@@ -46,7 +46,7 @@ const eventMapUrl = computed(() => eventData.value?.locationMap || 'https://maps
 const eventLocVenue = computed(() => eventData.value?.locationName || 'Gambir Expo')
 const eventLocCity = computed(() => eventData.value?.locationCity || 'Jakarta Pusat, Indonesia')
 const organizerName = computed(() => (eventData.value?.organizer || 'SILATURAHMI PRESENTS').toUpperCase())
-const organizerImage = computed(() => eventData.value?.organizerImage || '/silaturahmi.png')
+const organizerImage = computed(() => eventData.value?.organizerImage || '/silaturahmi.webp')
 const maxBuyTicket = computed(() => eventData.value?.maxBuyTicket || 10)
 
 // Countdown timer to event start

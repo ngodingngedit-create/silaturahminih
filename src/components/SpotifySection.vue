@@ -34,7 +34,7 @@ const embedSrc = computed(() =>
       </h2>
       
       <p class="sp-desc">
-        Pilih volume di bawah untuk memuat playlist ke dalam console.
+        PILIH VOLUME DIBAWAH UNTUK MEMUAT<br />PLAYLIST KEDALAM CONSOLE.
       </p>
     </div>
 
@@ -233,6 +233,8 @@ const embedSrc = computed(() =>
   color: rgba(255,255,255,0.4);
   max-width: 500px;
   margin: 2rem auto 0;
+  text-transform: uppercase;
+  line-height: 1.5;
 }
 
 /* ===== Cassette Tapes (Nav) ===== */
@@ -594,7 +596,8 @@ const embedSrc = computed(() =>
 
 @media (max-width: 768px) {
   .sp-section { padding: 4rem 0; }
-  .sp-header { margin-bottom: 2rem; }
+  .sp-header { margin-bottom: 2rem; padding: 0 1rem; }
+  .sp-desc { font-size: 0.85rem; max-width: 100%; margin-top: 1.25rem; }
   .tape-deck-wrap { margin-bottom: 1.5rem; }
   .cassette-grid { justify-content: flex-start; gap: 0.6rem; flex-wrap: nowrap; padding: 0.5rem 0.25rem 0.75rem; }
   .cassette-tape { width: 112px; flex-basis: 112px; }

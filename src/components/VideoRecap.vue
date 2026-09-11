@@ -197,10 +197,12 @@ onUnmounted(() => {
   .video-recap-wrapper {
     height: 250vh;
     padding-bottom: 0;
+    margin-bottom: -1rem;
   }
   .recap-header {
     padding-top: 0;
     margin-top: 0;
+    margin-bottom: 1rem;
     border-top: none;
   }
   .recap-title {
@@ -214,6 +216,8 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    padding-top: 0;
+    margin-top: -4vh;
   }
   .video-container {
     width: 100%;

@@ -209,4 +209,10 @@ function getTapePos(id) {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+@media (max-width: 768px) {
+  .ps-section { padding: 3rem 0 3rem; margin-top: 0; }
+  .ps-head { margin-bottom: 1.5rem; gap: 0.75rem; }
+  .ps-strip { padding-top: 1rem; }
+}
 </style>

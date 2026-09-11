@@ -2,7 +2,7 @@
 defineProps({
   text: {
     type: String,
-    default: 'SILATURAHMI VOL 3 10 APRIL 2027'
+    default: 'SILATURAHMI (VOL 3 - 10 APRIL 2027)'
   }
 })
 </script>
@@ -26,19 +26,28 @@ defineProps({
   font-family: var(--font-body);
   font-weight: normal;
   text-transform: uppercase;
-  font-size: 1.2rem;
+  font-size: 1rem;
   letter-spacing: 0.1em;
+  line-height: 1.4;
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .marquee-content {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   animation: scroll 30s linear infinite;
   padding-left: 0;
+  will-change: transform;
 }
 
 .marquee-content span {
   display: inline-block;
-  padding-right: 0;
+  padding-right: 1.5rem;
+  line-height: 1.4;
+  flex-shrink: 0;
 }
 
 @keyframes scroll {
@@ -48,9 +57,14 @@ defineProps({
 
 @media (max-width: 768px) {
   .marquee-container {
-    padding: 0.55rem 0;
+    padding: 0.6rem 0;
     font-size: 0.75rem;
     letter-spacing: 0.08em;
+    line-height: 1.4;
+    overflow: hidden;
+  }
+  .marquee-content span {
+    padding-right: 1rem;
   }
 }
 </style>

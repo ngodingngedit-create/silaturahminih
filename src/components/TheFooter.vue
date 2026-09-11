@@ -48,7 +48,7 @@
         <div class="footer-grid">
           <!-- Column 1: Brand -->
           <div class="footer-col brand-col">
-            <img src="/silaturahmi.png" alt="Silaturahmi Festival" class="footer-logo" />
+            <img src="/silaturahmi.webp" alt="Silaturahmi Festival" class="footer-logo" />
             <p class="footer-tagline">mempererat tali kasih dan persaudaraan</p>
           </div>
 
@@ -132,9 +132,13 @@ const navLinks = [
 ]
 
 const primaryPartners = [
-  {
+   {
     title: 'PROMOTED BY',
-    logos: ['/logo pbb.png', '/lantai bawah.png']
+    logos: ['/barengbareng.webp']
+  },
+  {
+    title: 'SUPPORTED BY',
+    logos: ['/logo pbb.webp', '/lantai bawah.webp']
   },
   {
     title: 'OFFICIAL TICKETING',
@@ -424,6 +428,8 @@ const sponsorsLogos = [
 }
 
 @media (max-width: 600px) {
+  .site-footer { margin-top: -1rem; }
+  .primary-partners-section { padding-top: 3rem; }
   .footer-grid { grid-template-columns: 1fr; text-align: center; }
   .footer-col { align-items: center; }
   .footer-nav { align-items: center; }

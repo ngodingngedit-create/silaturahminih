@@ -238,7 +238,7 @@ const getSpotifySrc = (url) => {
     </div>
   </Transition>
 
-  <MarqueeSection text="LINEUP VOL 2 • SILATURAHMI FESTIVAL" />
+  <MarqueeSection text="SILATURAHMI (VOL 3 - 10 APRIL 2027)" />
 
   <!-- Video Recap -->
   <VideoRecap />
@@ -297,7 +297,7 @@ const getSpotifySrc = (url) => {
   <!-- Spotify Playlists -->
   <SpotifySection />
 
-  <MarqueeSection text="GALERI KENANGAN • SILATURAHMI FESTIVAL" />
+  <MarqueeSection text="SILATURAHMI (VOL 3 - 10 APRIL 2027)" />
 
   <!-- Photo Scroll -->
   <PhotoScroll />
@@ -862,8 +862,8 @@ section {
 
 .tape-tl { top: 20px; left: -30px; transform: rotate(-35deg); }
 .tape-tr { top: 20px; right: -30px; transform: rotate(35deg); }
-.tape-bl { bottom: 20px; left: -30px; transform: rotate(-145deg); }
-.tape-br { bottom: 20px; right: -30px; transform: rotate(145deg); }
+.tape-bl { bottom: 32px; left: -30px; transform: rotate(-145deg); }
+.tape-br { bottom: 32px; right: -30px; transform: rotate(145deg); }
 
 /* Typography */
 .stencil-wrap {
@@ -1149,7 +1149,7 @@ section {
   .tt-visual { padding: 2rem 1rem; }
   .big-date-hype { font-size: clamp(2.5rem, 14vw, 3.5rem); margin-bottom: 1rem; }
   .hype-tag { font-size: 0.65rem; padding: 0.6rem 1rem; }
-  .vibe-section { padding: 4rem 1rem; }
+  .vibe-section { padding: 2rem 1rem; margin-top: -1.5rem; }
   .vibe-actions { flex-direction: row; gap: 1rem; }
   .vibe-btn { width: auto; transform: rotate(0); text-align: center; padding: 0.8rem 1.6rem; font-size: 0.78rem; }
   .stencil-wrap { margin-bottom: 2rem; max-width: 100%; }

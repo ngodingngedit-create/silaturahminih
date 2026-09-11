@@ -26,7 +26,7 @@ function closeMenu() {
 }
 
 // Logo fade cycle in navbar
-const logos = ['/silaturahmi.png', '/logo pbb.png', '/lantai bawah.png']
+const logos = ['/silaturahmi.webp', '/barengbareng.webp']
 const currentLogoIndex = ref(0)
 const showLogo = ref(true)
 let logoTimer = null
@@ -72,7 +72,7 @@ const navLinks = [
           <span></span>
         </button>
         <RouterLink to="/" class="logo-link" @click="closeMenu">
-          <img src="/silaturahmi.png" alt="Silaturahmi Festival" class="logo-img">
+          <img src="/silaturahmi.webp" alt="Silaturahmi Festival" class="logo-img">
         </RouterLink>
       </div>
 

@@ -57,7 +57,7 @@ onUnmounted(() => stopAutoplay())
     <div class="hero-content">
       <div class="content-inner">
         <div class="logo-wrapper">
-          <img src="/silaturahmi.png" alt="Silaturahmi Festival 2027" class="hero-logo" />
+          <img src="/silaturahmi.webp" alt="Silaturahmi Festival 2027" class="hero-logo" />
         </div>
         
         <div class="info-block">
