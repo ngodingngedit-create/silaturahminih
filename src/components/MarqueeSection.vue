@@ -2,7 +2,7 @@
 defineProps({
   text: {
     type: String,
-    default: 'SILATURAHMI VOL 3 IS COMING SOON 2027'
+    default: 'SILATURAHMI VOL 3 10 APRIL 2027'
   }
 })
 </script>

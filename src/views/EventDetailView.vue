@@ -571,50 +571,7 @@ watch(showCartSheet, (v) => {
             </div>
           </div>
 
-          <aside class="cart-summary" aria-label="Tiket dipilih">
-            <div class="cart-head">
-              <div>
-                <h3 class="cart-title">Tiket Dipilih</h3>
-                <p class="cart-sub">{{ cartCount }} tiket</p>
-              </div>
-              <button class="cart-edit" @click="isEditingCart = !isEditingCart" :disabled="cartItems.length === 0">
-                {{ isEditingCart ? 'Selesai' : 'Edit' }}
-              </button>
-            </div>
-            <div v-if="cartItems.length === 0" class="cart-empty">
-              Belum ada tiket dipilih. Klik <strong>+ Tambah</strong> pada kategori.
-            </div>
-            <ul v-else class="cart-list">
-              <li v-for="item in cartItems" :key="item.id" class="cart-item">
-                <span class="cart-item-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"></path>
-                    <path d="M13 5v2"></path>
-                    <path d="M13 17v2"></path>
-                    <path d="M13 11v2"></path>
-                  </svg>
-                </span>
-                <div class="cart-item-info">
-                  <span class="cart-item-name">{{ item.name }}</span>
-                  <span class="cart-item-meta">{{ item.qty }} × {{ item.priceFormatted }}</span>
-                </div>
-                <div class="cart-item-right">
-                  <span class="cart-item-price">Rp {{ item.subtotal.toLocaleString('id-ID') }}</span>
-                  <div v-if="isEditingCart" class="cart-item-actions">
-                    
-                    <button class="cart-remove" @click="removeCartItem(item.id)">Hapus</button>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div v-if="cartItems.length > 0" class="cart-foot">
-              <div class="cart-total-row">
-                <span>Total</span>
-                <strong>{{ cartTotalFormatted }}</strong>
-              </div>
-              <button v-if="isEditingCart" class="cart-clear" @click="clearCart">Hapus Semua</button>
-            </div>
-          </aside>
+          
         </div>
       </section>
 
@@ -1072,11 +1029,14 @@ watch(showCartSheet, (v) => {
 /* STICKY TAB NAVIGATION BAR */
 .sticky-tabs-nav {
   position: sticky;
-  top: 90px;
+  top: 89px;
   z-index: 90;
-  background: var(--color-black);
+  background: #18181B;
   border-bottom: 1px solid var(--color-dark-border);
   box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  margin-top: -1px;
+  padding-top: 1px;
+  isolation: isolate;
 }
 
 .tabs-list {
@@ -1089,6 +1049,7 @@ watch(showCartSheet, (v) => {
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: none;
+  background: #18181B;
 }
 
 .tabs-list::-webkit-scrollbar {
@@ -1480,17 +1441,7 @@ watch(showCartSheet, (v) => {
 }
 
 /* CART SUMMARY (right) */
-.cart-summary {
-  background: var(--color-dark-surface);
-  border: 1px solid var(--color-dark-border);
-  border-radius: 16px;
-  padding: 1.25rem;
-  position: sticky;
-  top: 170px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+
 
 .cart-head {
   display: flex;
@@ -1733,10 +1684,12 @@ watch(showCartSheet, (v) => {
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--color-black);
+  background: #18181B;
   border-top: 1px solid var(--color-dark-border);
-  padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
+  margin-bottom: -1px;
+  padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom) + 1px);
   box-shadow: 0 -8px 24px rgba(0,0,0,0.4);
+  isolation: isolate;
 }
 
 .bcb-container {
@@ -1899,15 +1852,18 @@ watch(showCartSheet, (v) => {
 
 .cart-sheet-card {
   width: 100%;
-  max-height: 75vh;
+  max-height: calc(75vh + env(safe-area-inset-bottom));
   overflow: auto;
   overscroll-behavior: contain;
   background: var(--color-dark-surface);
+  background-clip: padding-box;
   border: 1px solid var(--color-dark-border);
   border-radius: 18px 18px 0 0;
   border-bottom: none;
-  padding: 0 0 1.5rem;
+  margin-bottom: -1px;
+  padding: 0 0 calc(1.5rem + env(safe-area-inset-bottom) + 1px);
   touch-action: pan-y;
+  isolation: isolate;
 }
 
 .cart-sheet-card.dragging { transition: none; }
@@ -2115,9 +2071,6 @@ watch(showCartSheet, (v) => {
     grid-template-columns: 1fr;
   }
 
-  .cart-summary {
-    position: static;
-  }
 }
 @media (max-width: 640px) {
   .event-detail-page .container.event-wide {
@@ -2215,7 +2168,20 @@ watch(showCartSheet, (v) => {
   .cd-txt { display: none; }
 
   .sticky-tabs-nav {
-    top: 60px;
+    top: 59px;
+    margin-top: -1px;
+    padding-top: 1px;
+    background: #18181B;
+  }
+
+  .tabs-list {
+    gap: 1.25rem;
+    padding: 0 1rem;
+    background: #18181B;
+  }
+
+  .tabs-list li button {
+    padding: 0.9rem 0;
   }
 
   .content-section {
@@ -2362,7 +2328,9 @@ watch(showCartSheet, (v) => {
   }
 
   .bottom-checkout-bar {
-    padding: 0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom));
+    background: #18181B;
+    margin-bottom: -1px;
+    padding: 0.45rem 0 calc(0.45rem + env(safe-area-inset-bottom) + 1px);
   }
 
   .view-tickets-btn {
