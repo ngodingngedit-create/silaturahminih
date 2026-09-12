@@ -164,23 +164,23 @@ const navLinks = [
   <nav v-if="!isTicketPage" class="mobile-bottomnav" :class="{ hidden: menuOpen }">
     <RouterLink to="/" class="mb-item" :class="{ active: route.path === '/' }" aria-label="Beranda">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-      <span>Home</span>
+      <span>BERANDA</span>
     </RouterLink>
     <RouterLink to="/lineup" class="mb-item" :class="{ active: route.path === '/lineup' }" aria-label="Lineup">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l12-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-      <span>Lineup</span>
+      <span>PENAMPIL</span>
     </RouterLink>
     <RouterLink :to="EVENT_PATH" class="mb-item mb-ticket" :class="{ active: isEventActive }" aria-label="Tiket">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg>
-      <span>Tiket</span>
+      <span>TIKET</span>
     </RouterLink>
     <RouterLink to="/gallery" class="mb-item" :class="{ active: route.path === '/gallery' }" aria-label="Galeri">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-      <span>Galeri</span>
+      <span>GALERI</span>
     </RouterLink>
     <a href="https://pasarbarengbareng.com/" target="_blank" rel="noopener" class="mb-item" aria-label="Merch">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h15l-1.5 9h-12z"/><path d="M6 7 5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
-      <span>Merch</span>
+      <span>MERCH</span>
     </a>
   </nav>
 
