@@ -81,7 +81,12 @@ export function mapEventPayload(payload) {
     locationCity: d.location_city || '',
     locationAddress: d.location_address || '',
     locationMap: d.location_map || '',
-    description: d.description || '',
+    description: (d.description || '')
+      .replace(/17 April 2026/gi, '17 April 2027')
+      .replace(
+        /mempererat tali kasih dan persaudaraan/gi,
+        '<strong class="desc-highlight">$&</strong>',
+      ),
     termCondition: (d.term_condition || '')
       .replace(/Kolektix\.com/gi, 'Silaturahmi.live')
       .replace(

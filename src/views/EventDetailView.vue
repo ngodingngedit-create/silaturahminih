@@ -37,14 +37,10 @@ const eventTimeLabel = computed(() => {
   const end = eventData.value.endTime ? ` - ${eventData.value.endTime}` : ''
   return `${eventData.value.startTime}${end} ${eventData.value.zoneTime || 'WIB'}`
 })
-const eventVenueLabel = computed(() => {
-  if (!eventData.value?.locationName) return 'Gambir Expo, Jakarta'
-  const city = eventData.value.locationCity ? `, ${eventData.value.locationCity}` : ''
-  return `${eventData.value.locationName}${city}`
-})
+const eventVenueLabel = computed(() => 'SEGERA DIUMUMKAN')
 const eventMapUrl = computed(() => eventData.value?.locationMap || 'https://maps.google.com/?q=Gambir+Expo+Jakarta')
-const eventLocVenue = computed(() => eventData.value?.locationName || 'Gambir Expo')
-const eventLocCity = computed(() => eventData.value?.locationCity || 'Jakarta Pusat, Indonesia')
+const eventLocVenue = computed(() => 'SEGERA DIUMUMKAN')
+const eventLocCity = computed(() => 'SEGERA DIUMUMKAN')
 const organizerName = computed(() => (eventData.value?.organizer || 'SILATURAHMI PRESENTS').toUpperCase())
 const organizerImage = computed(() => eventData.value?.organizerImage || '/silaturahmi.webp')
 const maxBuyTicket = computed(() => eventData.value?.maxBuyTicket || 10)
@@ -244,53 +240,15 @@ function handleBottomAction() {
   router.push('/personal-info')
 }
 
-// Share modal toggle
-const isShareModalOpen = ref(false)
+// Share: direct copy link
 const isCopied = ref(false)
-const isMoreOpen = ref(false)
-const moreWrap = ref(null)
-const chatUrl = 'https://wa.me/6281234567890?text=Halo%20Silaturahmi%20Festival,%20saya%20butuh%20bantuan%20tiket.'
 
-function toggleMore() {
-  isMoreOpen.value = !isMoreOpen.value
-}
-function closeMore() {
-  isMoreOpen.value = false
-}
-function openChat() {
-  closeMore()
-  window.open(chatUrl, '_blank', 'noopener')
-}
-function openShare() {
-  closeMore()
-  shareEvent()
-}
-function onMoreOutside(e) {
-  if (moreWrap.value && !moreWrap.value.contains(e.target)) closeMore()
-}
-function onMoreKey(e) {
-  if (e.key === 'Escape') closeMore()
-}
-
-function shareEvent() {
-  if (navigator.share) {
-    navigator.share({
-      title: eventName.value,
-      text: `Beli tiket ${eventName.value} sekarang!`,
-      url: window.location.href,
-    }).catch(() => {})
-  } else {
-    isShareModalOpen.value = true
-  }
-}
-
-function copyLink() {
-  navigator.clipboard.writeText(window.location.href)
+async function copyEventLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href)
+  } catch { /* ponytail: clipboard may be blocked, still show feedback */ }
   isCopied.value = true
-  setTimeout(() => {
-    isCopied.value = false
-    isShareModalOpen.value = false
-  }, 2000)
+  setTimeout(() => { isCopied.value = false }, 2000)
 }
 
 onMounted(() => {
@@ -301,8 +259,6 @@ onMounted(() => {
   checkTitleOverflow()
   window.addEventListener('resize', updateIndicator)
   window.addEventListener('resize', checkTitleOverflow)
-  document.addEventListener('click', onMoreOutside)
-  document.addEventListener('keydown', onMoreKey)
   document.body.classList.toggle('cart-sheet-open', showCartSheet.value)
   if (showCartSheet.value) document.body.style.overflow = 'hidden'
 })
@@ -311,8 +267,6 @@ onUnmounted(() => {
   if (timer) clearInterval(timer)
   window.removeEventListener('resize', checkTitleOverflow)
   window.removeEventListener('resize', updateIndicator)
-  document.removeEventListener('click', onMoreOutside)
-  document.removeEventListener('keydown', onMoreKey)
   document.body.classList.remove('cart-sheet-open')
   document.body.style.overflow = ''
 })
@@ -421,32 +375,12 @@ watch(showCartSheet, (v) => {
                   <span class="org-name">{{ organizerName }}</span>
                 </div>
               </div>
-              <div ref="moreWrap" class="more-wrap">
-                <button class="more-btn" @click.stop="toggleMore" aria-label="Opsi lain" :aria-expanded="isMoreOpen">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <circle cx="12" cy="5" r="1.8" />
-                    <circle cx="12" cy="12" r="1.8" />
-                    <circle cx="12" cy="19" r="1.8" />
-                  </svg>
+              <div class="more-wrap">
+                <button class="more-btn" @click.stop="copyEventLink" :aria-label="isCopied ? 'Link tersalin' : 'Salin link event'" :title="isCopied ? 'Link tersalin!' : 'Salin link'">
+                  <svg v-if="!isCopied" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
+                  <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
                 </button>
-                <Transition name="more-pop">
-                  <Teleport to="body">
-                    <div v-if="isMoreOpen" class="more-backdrop" @click="closeMore">
-                      <div class="more-menu" @click.stop>
-                        <div class="more-grab" aria-hidden="true"><span></span></div>
-                        <p class="more-title">Opsi Event</p>
-                        <button class="more-item" @click="openChat">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-                          <span>Chat</span>
-                        </button>
-                        <button class="more-item" @click="openShare">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
-                          <span>Share</span>
-                        </button>
-                      </div>
-                    </div>
-                  </Teleport>
-                </Transition>
+                <span v-if="isCopied" class="share-toast">Link tersalin!</span>
               </div>
             </div>
           </div>
@@ -487,7 +421,7 @@ watch(showCartSheet, (v) => {
             <line x1="16" y1="17" x2="8" y2="17"></line>
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
-          <h2 class="section-heading">Description</h2>
+          <h2 class="section-heading">DESKRIPSI</h2>
         </div>
 
         <div v-if="eventData?.description" class="description-text-box api-html" v-html="eventData.description"></div>
@@ -510,7 +444,7 @@ watch(showCartSheet, (v) => {
           <svg class="section-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"></path>
           </svg>
-          <h2 class="section-heading">Tickets</h2>
+          <h2 class="section-heading">TIKET</h2>
         </div>
 
         <div v-if="eventLoading" class="tickets-loading">Memuat tiket...</div>
@@ -635,13 +569,13 @@ watch(showCartSheet, (v) => {
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
             <circle cx="12" cy="10" r="3"></circle>
           </svg>
-          <h2 class="section-heading">Location</h2>
+          <h2 class="section-heading">LOKASI</h2>
         </div>
 
         <div class="location-box">
           <div class="loc-details">
-            <h3 class="loc-venue">TBA</h3>
-            <p class="loc-city">To Be Announced</p>
+            <h3 class="loc-venue">{{ eventLocVenue }}</h3>
+            <p class="loc-city">{{ eventLocCity }}</p>
           </div>
           <a
             :href="eventMapUrl"
@@ -664,7 +598,7 @@ watch(showCartSheet, (v) => {
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
-          <h2 class="section-heading">Terms & Conditions</h2>
+          <h2 class="section-heading">SYARAT & KETENTUAN</h2>
         </div>
 
         <div v-if="eventData?.termCondition" class="description-text-box api-html" v-html="eventData.termCondition"></div>
@@ -710,21 +644,6 @@ watch(showCartSheet, (v) => {
         >
           {{ activeNav === 'tickets' ? 'BELI TIKET' : 'LIHAT TIKET' }}
         </button>
-      </div>
-    </div>
-
-    <!-- SHARE MODAL -->
-    <div v-if="isShareModalOpen" class="modal-backdrop" @click="isShareModalOpen = false">
-      <div class="modal-card" @click.stop>
-        <h3>Bagikan Event Ini</h3>
-        <p>Salin link di bawah ini untuk membagikan info tiket Silaturahmi 2027.</p>
-        <div class="modal-input-group">
-          <input type="text" :value="window?.location?.href" readonly />
-          <button @click="copyLink" class="copy-btn">
-            {{ isCopied ? 'Tersalin!' : 'Salin Link' }}
-          </button>
-        </div>
-        <button class="close-modal-btn" @click="isShareModalOpen = false">Tutup</button>
       </div>
     </div>
 
@@ -986,13 +905,11 @@ watch(showCartSheet, (v) => {
 }
 
 .org-avatar {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: var(--color-black);
   overflow: hidden;
-  border: 1px solid var(--color-dark-border);
   padding: 4px;
 }
 
@@ -1018,8 +935,8 @@ watch(showCartSheet, (v) => {
   color: var(--color-white);
 }
 
-/* MORE MENU */
-.more-wrap { position: static; flex-shrink: 0; }
+/* SHARE BUTTON */
+.more-wrap { position: relative; flex-shrink: 0; }
 .more-btn {
   background: none;
   border: none;
@@ -1032,55 +949,18 @@ watch(showCartSheet, (v) => {
   justify-content: center;
 }
 .more-btn:hover { color: var(--color-primary); background: rgba(255, 255, 255, 0.06); }
-.more-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-.more-menu {
-  width: min(340px, 100%);
-  background: var(--color-dark-surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-  padding: 0.5rem 0.5rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-.more-grab { display: none; }
-.more-title {
+.share-toast {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  white-space: nowrap;
+  background: var(--color-primary);
+  color: var(--color-black);
   font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0.25rem 0.5rem 0.5rem;
-}
-.more-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  background: none;
-  border: none;
-  color: var(--color-white);
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.6rem 0.7rem;
+  font-weight: 700;
+  padding: 0.35rem 0.6rem;
   border-radius: 8px;
-  cursor: pointer;
-  text-align: left;
 }
-.more-item svg { color: var(--color-primary); flex-shrink: 0; }
-.more-item:hover { background: rgba(255, 255, 255, 0.06); }
-.more-pop-enter-active, .more-pop-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
-.more-pop-enter-from, .more-pop-leave-to { opacity: 0; transform: translateY(-6px) scale(0.98); }
 
 /* STICKY TAB NAVIGATION BAR */
 .sticky-tabs-nav {
@@ -1189,6 +1069,19 @@ watch(showCartSheet, (v) => {
 
 .api-html p { margin: 0 0 0.75rem; }
 .api-html ol, .api-html ul { padding-left: 1.25rem; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.desc-highlight {
+  font-size: 1.15em;
+  font-weight: 800;
+  color: var(--color-white);
+}
+
+@media (min-width: 1024px) {
+  .desc-highlight {
+    font-size: 1.5em;
+    line-height: 1.4;
+  }
+}
 
 .tickets-loading {
   color: rgba(255, 255, 255, 0.6);
@@ -1895,72 +1788,6 @@ watch(showCartSheet, (v) => {
   transform: none;
 }
 
-/* MODAL STYLING */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.modal-card {
-  background: var(--color-dark-surface);
-  border-radius: 16px;
-  padding: 1.75rem;
-  max-width: 440px;
-  width: 100%;
-  color: var(--color-white);
-  border: 1px solid var(--color-dark-border);
-}
-
-.modal-card h3 {
-  margin-top: 0;
-  font-size: 1.25rem;
-}
-
-.modal-input-group {
-  display: flex;
-  gap: 0.5rem;
-  margin: 1.25rem 0;
-}
-
-.modal-input-group input {
-  flex: 1;
-  background: var(--color-black);
-  border: 1px solid var(--color-dark-border);
-  color: var(--color-white);
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-}
-
-.copy-btn {
-  background: var(--color-primary);
-  color: var(--color-black);
-  border: none;
-  font-weight: 700;
-  padding: 0 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.close-modal-btn {
-  background: none;
-  border: 1px solid var(--color-dark-border);
-  color: var(--color-white);
-  width: 100%;
-  padding: 0.6rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
 /* CART SHEET (mobile detail panel) */
 .cart-sheet-backdrop {
   display: flex;
@@ -2283,7 +2110,6 @@ watch(showCartSheet, (v) => {
   .organizer-row { gap: 0.5rem; padding-top: 0.6rem; }
   .organizer-box { gap: 0.6rem; }
   .more-btn { padding: 0.4rem; }
-  .more-menu { min-width: 180px; }
 
   .countdown-label,
   .countdown-boxes,
@@ -2365,6 +2191,8 @@ watch(showCartSheet, (v) => {
 
   .toc-price-label { font-size: 0.65rem; }
   .toc-price { font-size: 0.9rem; }
+  .toc-price.is-discount { font-size: 0.85rem; }
+  .toc-price-strike { font-size: 0.7rem; }
   .toc-expand { font-size: 1rem; }
 
   .toc-desc-row {

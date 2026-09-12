@@ -53,7 +53,7 @@ onUnmounted(() => {
 const MERCH_URL = 'https://pasarbarengbareng.com/'
 const navLinks = [
   { to: '/', label: 'BERANDA' },
-  { to: '/lineup', label: 'LINEUP' },
+  { to: '/lineup', label: 'PENAMPIL' },
   { href: MERCH_URL, label: 'MERCH' },
   { to: EVENT_PATH, label: 'TIKET' },
   { to: '/gallery', label: 'GALERI' },

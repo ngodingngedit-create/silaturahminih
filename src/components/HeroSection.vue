@@ -61,7 +61,7 @@ onUnmounted(() => stopAutoplay())
         </div>
         
         <div class="info-block">
-          <h2 class="hero-date">VOL 3 10 APRIL 2027</h2>
+          <h2 class="hero-date">10 APRIL 2027</h2>
           
           <div class="hero-slogan">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
         </div>
@@ -192,9 +192,10 @@ onUnmounted(() => stopAutoplay())
   color: var(--color-white);
   padding: 0.6rem 1.5rem;
   font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
   border-radius: 100px;
   text-transform: uppercase;
 }

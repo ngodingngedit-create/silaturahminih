@@ -125,7 +125,7 @@ const isTicketPage = computed(() => isTicketPagePath(route.path))
 
 const navLinks = [
   { to: '/', label: 'Beranda' },
-  { to: '/lineup', label: 'Lineup' },
+  { to: '/lineup', label: 'Penampil' },
   { href: 'https://pasarbarengbareng.com/', label: 'Merch' },
   { to: EVENT_PATH, label: 'Tiket' },
   { to: '/gallery', label: 'Galeri' },
