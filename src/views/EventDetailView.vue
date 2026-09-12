@@ -24,7 +24,7 @@ const eventData = ref(null)
 const eventLoading = ref(true)
 const eventError = ref('')
 
-const ticketList = computed(() => fallbackTickets)
+const ticketList = computed(() => fallbackTickets.filter((t) => !['presale-1', 'presale-2', 'presale-3', 'reguler'].includes(t.id)))
 const eventName = computed(() => eventData.value?.name || 'Blind Ticket SILATURAHMI 2027')
 const eventImage = computed(() => eventData.value?.imageUrl || '/konser1.jpg')
 const eventDateLabel = computed(() => '10 APRIL 2027')
