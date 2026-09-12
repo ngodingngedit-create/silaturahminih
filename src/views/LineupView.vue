@@ -44,7 +44,7 @@ function closeArtist() {
 <template>
   <section class="lineup-content">
     <div class="container lu-wrap">
-      <h1 class="lu-title">LINEUP</h1>
+      <h1 class="lu-title">PENAMPIL</h1>
 
       <div v-for="v in vols" :key="v.id" class="lu-vol">
         <button class="lu-vol-head" @click="toggleVol(v)" :aria-expanded="v.open">
