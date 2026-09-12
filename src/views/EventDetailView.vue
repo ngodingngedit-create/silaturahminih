@@ -24,7 +24,10 @@ const eventData = ref(null)
 const eventLoading = ref(true)
 const eventError = ref('')
 
-const ticketList = computed(() => fallbackTickets.filter((t) => !['presale-1', 'presale-2', 'presale-3', 'reguler'].includes(t.id)))
+const ticketList = computed(() => {
+  if (eventData.value?.tickets?.length) return eventData.value.tickets
+  return fallbackTickets.filter((t) => !['presale-1', 'presale-2', 'presale-3', 'reguler'].includes(t.id))
+})
 const eventName = computed(() => eventData.value?.name || 'Blind Ticket SILATURAHMI 2027')
 const eventImage = computed(() => eventData.value?.imageUrl || '/konser1.jpg')
 const eventDateLabel = computed(() => '10 APRIL 2027')
@@ -458,7 +461,7 @@ watch(showCartSheet, (v) => {
                 <div class="toc-top">
                   <div class="toc-title-wrap">
                     <h3 class="toc-name">{{ ticket.name }}</h3>
-                    <span v-if="ticket.category" class="toc-category">{{ ticket.category }}</span>
+                   
                     <span class="toc-badge" :class="ticket.badgeClass">
                       <span class="toc-dot"></span>{{ ticket.status }}
                     </span>
@@ -484,8 +487,8 @@ watch(showCartSheet, (v) => {
                   <p class="toc-desc">{{ ticket.desc }}</p>
                 </div>
                 <div class="toc-bottom">
-                  <span v-if="ticket.available" class="toc-ends">Berakhir pada: <strong>{{ ticket.endsAt }}</strong></span>
-                  <span v-else class="toc-starts"><span class="toc-starts-label">Dimulai Pada:</span><strong>{{ ticket.startsAt }}</strong></span>
+                  <span v-if="ticket.available" class="toc-ends">Berakhir pada: <strong>{{ ticket.saleEndLabel || ticket.endsAt }}</strong></span>
+                  <span v-else class="toc-starts"><span class="toc-starts-label">Dimulai Pada:</span><strong>{{ ticket.saleStartLabel || ticket.startsAt }}</strong></span>
                   <div class="toc-action">
                     <div v-if="qtyOf(ticket.id) > 0 && !ticket.soldout" class="qty-control">
                       <button class="qty-btn" @click.stop="decQty(ticket.id)" aria-label="Kurangi">−</button>
@@ -1092,13 +1095,6 @@ watch(showCartSheet, (v) => {
   padding: 0.5rem 0;
 }
 
-.toc-category {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
 
 .read-more-btn {
   background: none;

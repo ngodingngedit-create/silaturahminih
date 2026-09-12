@@ -9,16 +9,24 @@ export async function fetchEventBySlug(slug) {
 const fmtRp = (n) => 'Rp ' + Number(n || 0).toLocaleString('id-ID')
 
 function ticketWindow(t) {
-  const start = t.ticket_date && t.starting_time ? new Date(`${t.ticket_date}T${t.starting_time}`) : null
-  const end = t.ticket_end && t.ending_time ? new Date(`${t.ticket_end}T${t.ending_time}`) : null
+  const start = t.ticket_date ? new Date(`${t.ticket_date}T${t.starting_time || '00:00:00'}`) : null
+  const end = t.ticket_end ? new Date(`${t.ticket_end}T${t.ending_time || '23:59:59'}`) : null
   return { start, end }
+}
+
+function fmtSale(dateStr, timeStr) {
+  if (!dateStr) return ''
+  const time = (timeStr || '').slice(0, 5)
+  const d = new Date(`${dateStr}T00:00:00`)
+  const date = isNaN(d) ? dateStr : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  return time && time !== '00:00' ? `${date}, ${time}` : date
 }
 
 function mapTicket(t, now = new Date(), eventId = 0) {
   const id = String(t.id)
   const price = Number(t.price || 0)
   const { start, end } = ticketWindow(t)
-  const soldout = t.is_soldout === 1 || t.is_fullbook === 1 || (t.qty != null && Number(t.sold_qty || 0) >= Number(t.qty))
+  const soldout = Number(t.is_soldout) === 1
   const notStarted = start && now < start
   const ended = end && now > end
   const available = !soldout && !notStarted && !ended && t.is_show !== 0
@@ -35,6 +43,8 @@ function mapTicket(t, now = new Date(), eventId = 0) {
     desc: t.description || '',
     endsAt: t.ticket_end || '',
     startsAt: t.ticket_date || '',
+    saleStartLabel: fmtSale(t.ticket_date, t.starting_time),
+    saleEndLabel: fmtSale(t.ticket_end, t.ending_time),
     maxBuy: t.max_buy_ticket != null ? Number(t.max_buy_ticket) : null,
     available,
     status: soldout || ended ? 'HABIS' : notStarted ? 'SEGERA' : 'PENJUALAN BERLANGSUNG',
