@@ -77,7 +77,7 @@
           <div class="footer-col">
             <h3 class="footer-heading">INFO EVENT</h3>
             <div class="footer-info">
-              <p>Silaturahmi Vol 3 kembali hadir pada 10 April 2027 di Pamulang Square - Tangerang Selatan. Kembali mempererat tali kasih dan persaudaraan setelah merayakan hari raya idul fitri. sampai bertemu!</p>
+              <p>Silaturahmi Vol 3 kembali hadir pada 10 April 2027. </p>
             </div>
           </div>
 

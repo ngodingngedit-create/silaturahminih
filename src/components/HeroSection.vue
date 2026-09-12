@@ -61,7 +61,7 @@ onUnmounted(() => stopAutoplay())
         </div>
         
         <div class="info-block">
-          <h2 class="hero-date">COMING SOON VOL 3</h2>
+          <h2 class="hero-date">VOL 3 10 APRIL 2027</h2>
           
           <div class="hero-slogan">"MEMPERERAT TALI KASIH & PERSAUDARAAN"</div>
         </div>
@@ -204,6 +204,10 @@ onUnmounted(() => stopAutoplay())
   font-family: var(--font-body);
   gap: 1rem;
   justify-content: center;
+}
+
+@media (min-width: 769px) {
+  .info-block, .hero-actions { transform: translateY(-16px); }
 }
 
 .btn-yellow {

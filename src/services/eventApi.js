@@ -39,6 +39,8 @@ function mapTicket(t, now = new Date(), eventId = 0) {
     available,
     status: soldout || ended ? 'HABIS' : notStarted ? 'SEGERA' : 'PENJUALAN BERLANGSUNG',
     badgeClass: soldout || ended ? 'badge-soon' : notStarted ? 'badge-soon' : 'badge-available',
+    soldout: soldout || ended,
+    upcoming: notStarted && !soldout && !ended,
   }
 }
 
@@ -80,7 +82,12 @@ export function mapEventPayload(payload) {
     locationAddress: d.location_address || '',
     locationMap: d.location_map || '',
     description: d.description || '',
-    termCondition: d.term_condition || '',
+    termCondition: (d.term_condition || '')
+      .replace(/Kolektix\.com/gi, 'Silaturahmi.live')
+      .replace(
+        /Setiap tiket hanya berlaku untuk satu orang dan hanya dapat digunakan sesuai dengan ketentuan yang berlaku pada acara\.?/gi,
+        'Setiap tiket hanya berlaku untuk satu orang dan hanya bisa digunakan satu kali scan ketika acara',
+      ),
     maxBuyTicket: d.max_buy_ticket != null ? Number(d.max_buy_ticket) : null,
     maxBuyEmail: d.max_buy_email != null ? Number(d.max_buy_email) : null,
     maxUseVoucher: d.max_use_voucher != null ? Number(d.max_use_voucher) : null,

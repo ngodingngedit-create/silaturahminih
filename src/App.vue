@@ -41,7 +41,7 @@ onUnmounted(() => {
   <div class="app-wrapper">
     <audio
       ref="bgmAudio"
-      src="/BARENG-BARENG-SILATURAHMI.mp3"
+      src="/BARENG-BARENG - SILATURAHMI.mp3"
       autoplay
       loop
       preload="auto"

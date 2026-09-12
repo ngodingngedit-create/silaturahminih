@@ -39,7 +39,7 @@ function getTapePos(id) {
   <section class="ps-section">
     <div class="ps-head container">
       <div>
-        <div class="ps-eyebrow">MEMORABLE MOMENTS</div>
+        
         <h2 class="ps-title">GALERI KENANGAN</h2>
       </div>
       <RouterLink to="/gallery" class="ps-cta">

@@ -24,11 +24,11 @@ const eventData = ref(null)
 const eventLoading = ref(true)
 const eventError = ref('')
 
-const ticketList = computed(() => eventData.value?.tickets?.length ? eventData.value.tickets : fallbackTickets)
+const ticketList = computed(() => fallbackTickets)
 const eventName = computed(() => eventData.value?.name || 'Blind Ticket SILATURAHMI 2027')
 const eventImage = computed(() => eventData.value?.imageUrl || '/konser1.jpg')
 const eventDateLabel = computed(() => {
-  if (!eventData.value?.startDate) return '23 May 2027'
+  if (!eventData.value?.startDate) return '10 APRIL 2027'
   const d = new Date(eventData.value.startDate + 'T00:00:00')
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 })
@@ -194,7 +194,7 @@ const cartTotal = computed(() => cartItems.value.reduce((a, b) => a + b.subtotal
 const cartTotalFormatted = computed(() => 'Rp ' + cartTotal.value.toLocaleString('id-ID'))
 
 function selectTicketCategory(ticket) {
-  if (!ticket.available) return
+  if (!ticket.available || ticket.soldout) return
   selectedTicket.value = ticket
   if (!qtyOf(ticket.id)) cart.value = { ...cart.value, [ticket.id]: 1 }
 }
@@ -459,16 +459,16 @@ watch(showCartSheet, (v) => {
       <div class="container event-wide">
         <ul class="tabs-list" ref="tabsListRef">
           <li :class="{ active: activeNav === 'description' }">
-            <button data-tab="description" @click="scrollToSection('description')">Description</button>
+            <button data-tab="description" @click="scrollToSection('description')">Deskripsi</button>
           </li>
           <li :class="{ active: activeNav === 'tickets' }">
-            <button data-tab="tickets" @click="scrollToSection('tickets')">Tickets</button>
+            <button data-tab="tickets" @click="scrollToSection('tickets')">Tiket</button>
           </li>
           <li :class="{ active: activeNav === 'location' }">
-            <button data-tab="location" @click="scrollToSection('location')">Location</button>
+            <button data-tab="location" @click="scrollToSection('location')">Lokasi</button>
           </li>
           <li :class="{ active: activeNav === 'terms' }">
-            <button data-tab="terms" @click="scrollToSection('terms')">Terms & Conditions</button>
+            <button data-tab="terms" @click="scrollToSection('terms')">Syarat & Ketentuan</button>
           </li>
           <span class="tabs-indicator" :style="indicatorStyle"></span>
         </ul>
@@ -521,8 +521,8 @@ watch(showCartSheet, (v) => {
               v-for="ticket in ticketList"
               :key="ticket.id"
               class="ticket-option-card"
-              :class="{ selected: selectedTicket.id === ticket.id }"
-              @click="selectTicketCategory(ticket)"
+              :class="{ selected: selectedTicket.id === ticket.id, 'is-soldout': ticket.soldout, 'is-upcoming': ticket.upcoming }"
+              @click="(ticket.upcoming || ticket.infoOnly) ? toggleExpand(ticket.id) : selectTicketCategory(ticket)"
             >
               <div class="toc-main">
                 <div class="toc-top">
@@ -536,7 +536,10 @@ watch(showCartSheet, (v) => {
                   <div class="toc-price-wrap">
                     <span class="toc-price-label">Harga</span>
                     <span class="toc-price-row">
-                      <span class="toc-price">{{ ticket.priceFormatted }}</span>
+                      <span class="toc-price-col">
+                        <span v-if="ticket.originalPriceFormatted" class="toc-price-strike">{{ ticket.originalPriceFormatted }}</span>
+                        <span class="toc-price" :class="{ 'is-discount': ticket.originalPriceFormatted }">{{ ticket.priceFormatted }}</span>
+                      </span>
                       <button
                         class="toc-expand"
                         :class="{ open: expandedTicket === ticket.id }"
@@ -554,11 +557,19 @@ watch(showCartSheet, (v) => {
                   <span v-if="ticket.available" class="toc-ends">Berakhir pada: <strong>{{ ticket.endsAt }}</strong></span>
                   <span v-else class="toc-starts"><span class="toc-starts-label">Dimulai Pada:</span><strong>{{ ticket.startsAt }}</strong></span>
                   <div class="toc-action">
-                    <div v-if="qtyOf(ticket.id) > 0" class="qty-control">
+                    <div v-if="qtyOf(ticket.id) > 0 && !ticket.soldout" class="qty-control">
                       <button class="qty-btn" @click.stop="decQty(ticket.id)" aria-label="Kurangi">−</button>
                       <span class="qty-num">{{ qtyOf(ticket.id) }}</span>
                       <button class="qty-btn" @click.stop="incQty(ticket.id)" aria-label="Tambah">+</button>
                     </div>
+                    <button
+                      v-else-if="ticket.soldout"
+                      class="toc-add is-soldout-btn"
+                      disabled
+                      aria-disabled="true"
+                      tabindex="-1"
+                      @click.stop
+                    >+ Tambah</button>
                     <button
                       v-else
                       class="toc-add"
@@ -571,7 +582,49 @@ watch(showCartSheet, (v) => {
             </div>
           </div>
 
-          
+          <aside class="cart-summary" aria-label="Tiket dipilih">
+            <div class="cart-head">
+              <div>
+                <h3 class="cart-title">Tiket Dipilih</h3>
+                <p class="cart-sub">{{ cartCount }} tiket</p>
+              </div>
+              <button class="cart-edit" @click="isEditingCart = !isEditingCart" :disabled="cartItems.length === 0">
+                {{ isEditingCart ? 'Selesai' : 'Edit' }}
+              </button>
+            </div>
+            <div v-if="cartItems.length === 0" class="cart-empty">
+              Belum ada tiket dipilih. Klik <strong>+ Tambah</strong> pada kategori.
+            </div>
+            <ul v-else class="cart-list">
+              <li v-for="item in cartItems" :key="item.id" class="cart-item">
+                <span class="cart-item-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"></path>
+                    <path d="M13 5v2"></path>
+                    <path d="M13 17v2"></path>
+                    <path d="M13 11v2"></path>
+                  </svg>
+                </span>
+                <div class="cart-item-info">
+                  <span class="cart-item-name">{{ item.name }}</span>
+                  <span class="cart-item-meta">{{ item.qty }} × {{ item.priceFormatted }}</span>
+                </div>
+                <div class="cart-item-right">
+                  <span class="cart-item-price">Rp {{ item.subtotal.toLocaleString('id-ID') }}</span>
+                  <div v-if="isEditingCart" class="cart-item-actions">
+                    <button class="cart-remove" @click="removeCartItem(item.id)">Hapus</button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div v-if="cartItems.length > 0" class="cart-foot">
+              <div class="cart-total-row">
+                <span>Total</span>
+                <strong>{{ cartTotalFormatted }}</strong>
+              </div>
+              <button v-if="isEditingCart" class="cart-clear" @click="clearCart">Hapus Semua</button>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -587,8 +640,8 @@ watch(showCartSheet, (v) => {
 
         <div class="location-box">
           <div class="loc-details">
-            <h3 class="loc-venue">{{ eventLocVenue }}</h3>
-            <p class="loc-city">{{ eventLocCity }}</p>
+            <h3 class="loc-venue">TBA</h3>
+            <p class="loc-city">To Be Announced</p>
           </div>
           <a
             :href="eventMapUrl"
@@ -599,7 +652,7 @@ watch(showCartSheet, (v) => {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
-            <span class="map-btn-text">Open Google Maps</span>
+            <span class="map-btn-text">BUKA GOOGLE MAPS</span>
           </a>
         </div>
       </section>
@@ -629,7 +682,8 @@ watch(showCartSheet, (v) => {
           <div class="terms-group">
             <h3 class="terms-subheading">Event Guidelines & Code of Conduct</h3>
             <ul class="terms-list">
-              <li>Upon successful registration, visitors will receive an official e-ticket via email / Kolektix app.</li>
+              <li>Upon successful registration, visitors will receive an official e-ticket via email / Silaturahmi.live.</li>
+              <li>Setiap tiket hanya berlaku untuk satu orang dan hanya bisa digunakan satu kali scan ketika acara.</li>
               <li>Ticket confirmation containing payment details and e-tickets will be sent directly to your registered email upon payment.</li>
               <li>Dilarang membawa senjata tajam, obat-obatan terlarang, alkohol luar, dan senjata api ke dalam area festival.</li>
             </ul>
@@ -654,7 +708,7 @@ watch(showCartSheet, (v) => {
           :disabled="activeNav === 'tickets' && cartCount === 0"
           @click="handleBottomAction"
         >
-          {{ activeNav === 'tickets' ? 'Buy Tiket' : 'View Tickets' }}
+          {{ activeNav === 'tickets' ? 'BELI TIKET' : 'LIHAT TIKET' }}
         </button>
       </div>
     </div>
@@ -934,16 +988,18 @@ watch(showCartSheet, (v) => {
 .org-avatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  flex-shrink: 0;
+  border-radius: 12px;
   background: var(--color-black);
   overflow: hidden;
   border: 1px solid var(--color-dark-border);
+  padding: 4px;
 }
 
 .org-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .org-info {
@@ -1266,9 +1322,65 @@ watch(showCartSheet, (v) => {
   color: #15803d;
 }
 
+.badge-soldout {
+  background: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+}
+
 .badge-soon {
   background: rgba(245, 245, 240, 0.1);
   color: rgba(245, 245, 240, 0.65);
+}
+
+.ticket-option-card.is-soldout {
+  background: rgba(255, 255, 255, 0.02);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.ticket-option-card.is-upcoming {
+  background: rgba(255, 255, 255, 0.02);
+  opacity: 0.85;
+  cursor: default;
+}
+
+.ticket-option-card.is-upcoming .toc-add {
+  display: none;
+}
+
+.toc-add.is-soldout-btn {
+  background: rgba(245, 245, 240, 0.15);
+  color: rgba(245, 245, 240, 0.4);
+  cursor: not-allowed;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.toc-add.is-soldout-btn:disabled {
+  background: rgba(245, 245, 240, 0.15);
+  color: rgba(245, 245, 240, 0.4);
+  opacity: 1;
+}
+
+.toc-price-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.toc-price-strike {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(245, 245, 240, 0.55);
+  text-decoration: line-through;
+  text-decoration-color: rgba(239, 68, 68, 0.9);
+  line-height: 1;
+}
+
+.toc-price.is-discount {
+  color: #ef4444;
+  font-size: 1.35rem;
 }
 
 .toc-price-wrap {
@@ -1441,7 +1553,17 @@ watch(showCartSheet, (v) => {
 }
 
 /* CART SUMMARY (right) */
-
+.cart-summary {
+  background: var(--color-dark-surface);
+  border: 1px solid var(--color-dark-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  position: sticky;
+  top: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 .cart-head {
   display: flex;
@@ -2070,6 +2192,8 @@ watch(showCartSheet, (v) => {
   .tickets-layout {
     grid-template-columns: 1fr;
   }
+
+  .cart-summary { display: none; }
 
 }
 @media (max-width: 640px) {

@@ -281,7 +281,7 @@ const navLinks = [
 }
 
 .logo-img {
-  height: 40px;
+  height: 60px;
   width: auto;
   transition: var(--transition-normal);
 }
@@ -475,7 +475,7 @@ const navLinks = [
   .nav-loop-logo { width: 44px; height: 44px; margin-left: 0; }
   .navbar-container { padding: 0 1rem; gap: 0.5rem; }
   .nav-left { gap: 0.1rem; }
-  .logo-img { height: 32px; }
+  .logo-img { height: 44px; }
   .navbar { height: 60px; top: 1rem; width: calc(100% - 2rem); }
   .navbar.scrolled { top: 0; width: 100%; height: 60px; }
   .mobile-menu { max-width: 270px; padding-top: 90px; }

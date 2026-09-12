@@ -169,7 +169,7 @@ const getSpotifySrc = (url) => {
 
     <div class="container" style="text-align: center;">
       <button class="btn btn-yellow" @click="router.push('/lineup')">
-        LIHAT SEMUA LINEUP
+        LIHAT SEMUA PENAMPIL
       </button>
     </div>
 
@@ -258,19 +258,19 @@ const getSpotifySrc = (url) => {
             </div>
             <div class="price-box upcoming">
               <span class="pb-label">PRESALE 1</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-value">SEGERA</span>
             </div>
             <div class="price-box upcoming">
               <span class="pb-label">PRESALE 2</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-value">SEGERA</span>
             </div>
             <div class="price-box upcoming">
               <span class="pb-label">PRESALE 3</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-value">SEGERA</span>
             </div>
             <div class="price-box upcoming-accent">
               <span class="pb-label">REGULER</span>
-              <span class="pb-value">SOON</span>
+              <span class="pb-value">SEGERA</span>
             </div>
           </div>
 
@@ -286,7 +286,7 @@ const getSpotifySrc = (url) => {
           <div class="date-card coming-soon-mode">
             <div class="big-date-hype custom-hardcore-font">STAY<br>TUNED</div>
             <div class="venue-tag hype-tag">
-              <span class="loc-icon">✨</span> ANNOUNCING 2027
+              <span class="loc-icon"></span> 10 APRIL 2027
             </div>
           </div>
         </div>

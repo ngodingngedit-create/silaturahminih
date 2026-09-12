@@ -105,7 +105,7 @@ const tickets = [
               HABIS
             </button>
             <button v-else class="btn btn-outline-dark">
-              BUY TICKET
+              BELI TIKET
             </button>
           </div>
         </div>
@@ -129,7 +129,7 @@ const tickets = [
         <div class="info-divider"></div>
         <div class="info-item">
           <span class="info-label">TIKET VIA</span>
-          <span class="info-value">KOLEKTIX.COM</span>
+          <span class="info-value">Silaturahmi.live</span>
         </div>
       </div>
     </div>

@@ -315,16 +315,16 @@ function backToTickets() {
               </span>
               <span class="pi-chev" :class="{ open: openOwner === slot.key }">›</span>
             </button>
+            <div class="pi-toggle-row pi-toggle-sticky">
+              <span>Gunakan Data Pemesan</span>
+              <button
+                class="pi-switch"
+                :class="{ on: useBuyerFor[slot.key] }"
+                @click="useBuyerFor[slot.key] = !useBuyerFor[slot.key]"
+                :aria-pressed="!!useBuyerFor[slot.key]"
+              ><span class="pi-knob"></span></button>
+            </div>
             <div v-show="openOwner === slot.key" class="pi-card-body">
-              <div class="pi-toggle-row">
-                <span>Gunakan Data Pemesan</span>
-                <button
-                  class="pi-switch"
-                  :class="{ on: useBuyerFor[slot.key] }"
-                  @click="useBuyerFor[slot.key] = !useBuyerFor[slot.key]"
-                  :aria-pressed="!!useBuyerFor[slot.key]"
-                ><span class="pi-knob"></span></button>
-              </div>
               <template v-if="useBuyerFor[slot.key]">
                 <label class="pi-label">Nama Lengkap</label>
                 <input :value="buyer.name" class="pi-input pi-auto" type="text" placeholder="Nama Lengkap" disabled />
@@ -600,6 +600,13 @@ function backToTickets() {
   color: rgba(255, 255, 255, 0.65);
   font-size: 0.9rem;
   padding: 0.25rem 0;
+}
+.pi-toggle-sticky {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 1.25rem;
+}
+@media (max-width: 640px) {
+  .pi-toggle-sticky { padding: 0.65rem 0.9rem; }
 }
 .pi-switch {
   width: 46px;
