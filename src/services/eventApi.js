@@ -82,7 +82,8 @@ export function mapEventPayload(payload) {
     locationAddress: d.location_address || '',
     locationMap: d.location_map || '',
     description: (d.description || '')
-      .replace(/17 April 2026/gi, '17 April 2027')
+      .replace(/17 April 2026/gi, '10 April 2027')
+      .replace(/17 April 2027/gi, '10 April 2027')
       .replace(
         /mempererat tali kasih dan persaudaraan/gi,
         '<strong class="desc-highlight">$&</strong>',

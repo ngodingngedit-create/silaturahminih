@@ -27,11 +27,7 @@ const eventError = ref('')
 const ticketList = computed(() => fallbackTickets)
 const eventName = computed(() => eventData.value?.name || 'Blind Ticket SILATURAHMI 2027')
 const eventImage = computed(() => eventData.value?.imageUrl || '/konser1.jpg')
-const eventDateLabel = computed(() => {
-  if (!eventData.value?.startDate) return '10 APRIL 2027'
-  const d = new Date(eventData.value.startDate + 'T00:00:00')
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-})
+const eventDateLabel = computed(() => '10 APRIL 2027')
 const eventTimeLabel = computed(() => {
   if (!eventData.value?.startTime) return '15:00 - 23:30 WIB'
   const end = eventData.value.endTime ? ` - ${eventData.value.endTime}` : ''
@@ -42,7 +38,7 @@ const eventMapUrl = computed(() => eventData.value?.locationMap || 'https://maps
 const eventLocVenue = computed(() => 'SEGERA DIUMUMKAN')
 const eventLocCity = computed(() => 'SEGERA DIUMUMKAN')
 const organizerName = computed(() => (eventData.value?.organizer || 'SILATURAHMI PRESENTS').toUpperCase())
-const organizerImage = computed(() => eventData.value?.organizerImage || '/silaturahmi.webp')
+const organizerImage = computed(() => '/logobarengbareng.webp')
 const maxBuyTicket = computed(() => eventData.value?.maxBuyTicket || 10)
 
 // Countdown timer to event start
@@ -905,18 +901,20 @@ watch(showCartSheet, (v) => {
 }
 
 .org-avatar {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
-  border-radius: 12px;
+  border-radius: 999px;
   overflow: hidden;
-  padding: 4px;
+  background: var(--color-black);
 }
 
 .org-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 999px;
+  display: block;
 }
 
 .org-info {

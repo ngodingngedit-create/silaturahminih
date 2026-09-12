@@ -51,7 +51,7 @@ const tickets = [
     </div>
   </section>
 
-  <MarqueeSection text="SILATURAHMI (VOL 3 - 10 APRIL 2027)" />
+  <MarqueeSection text="SILATURAHMI VOL 3 - 10 APRIL 2027" />
 
   <!-- Ticket Cards -->
   <section class="tickets-section">

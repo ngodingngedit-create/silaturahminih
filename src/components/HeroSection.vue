@@ -68,7 +68,7 @@ onUnmounted(() => stopAutoplay())
 
         <div class="hero-actions">
           <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">BELI TIKET</button>
-          <button class="btn btn-white" @click="router.push('/lineup')">LIHAT LINEUP</button>
+          <button class="btn btn-white" @click="router.push('/lineup')">LIHAT PENAMPIL</button>
         </div>
       </div>
     </div>
@@ -268,7 +268,7 @@ onUnmounted(() => stopAutoplay())
   .content-inner { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
   .logo-wrapper { margin-bottom: 0; }
   .hero-logo {
-    max-width: min(200px, 56vw);
+    max-width: min(320px, 82vw);
     margin: 0 auto;
     animation: float-mobile 6s ease-in-out infinite;
   }

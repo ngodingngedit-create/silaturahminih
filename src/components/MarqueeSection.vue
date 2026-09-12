@@ -1,16 +1,11 @@
 <script setup>
-defineProps({
-  text: {
-    type: String,
-    default: 'SILATURAHMI (VOL 3 - 10 APRIL 2027)'
-  }
-})
+const MARQUEE_TEXT = 'SILATURAHMI VOL 3 - 10 APRIL 2027'
 </script>
 
 <template>
   <div class="marquee-container">
     <div class="marquee-content">
-      <span v-for="n in 6" :key="n">{{ text }} &bull; </span>
+      <span v-for="n in 6" :key="n">{{ MARQUEE_TEXT }} &bull; </span>
     </div>
   </div>
 </template>

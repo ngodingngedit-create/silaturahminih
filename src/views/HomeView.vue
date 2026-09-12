@@ -238,7 +238,7 @@ const getSpotifySrc = (url) => {
     </div>
   </Transition>
 
-  <MarqueeSection text="SILATURAHMI (VOL 3 - 10 APRIL 2027)" />
+  <MarqueeSection text="SILATURAHMI VOL 3 - 10 APRIL 2027" />
 
   <!-- Video Recap -->
   <VideoRecap />
@@ -297,7 +297,7 @@ const getSpotifySrc = (url) => {
   <!-- Spotify Playlists -->
   <SpotifySection />
 
-  <MarqueeSection text="SILATURAHMI (VOL 3 - 10 APRIL 2027)" />
+  <MarqueeSection text="SILATURAHMI VOL 3 - 10 APRIL 2027" />
 
   <!-- Photo Scroll -->
   <PhotoScroll />

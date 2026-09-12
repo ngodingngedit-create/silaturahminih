@@ -50,14 +50,14 @@ function closeArtist() {
         <button class="lu-vol-head" @click="toggleVol(v)" :aria-expanded="v.open">
           <span class="lu-vol-label">{{ v.label }}</span>
           <span class="lu-vol-meta">
-            <span v-if="v.coming" class="lu-coming">COMING SOON</span>
+            <span v-if="v.coming" class="lu-coming">SEGERA HADIR</span>
             <span v-else class="lu-count">{{ v.artists.length }} ARTIS</span>
             <span class="lu-chev" :class="{ open: v.open }">›</span>
           </span>
         </button>
 
         <div v-show="v.open" class="lu-body">
-          <div v-if="v.coming" class="lu-soon">COMING SOON</div>
+          <div v-if="v.coming" class="lu-soon">SEGERA HADIR</div>
           <div v-else class="lu-grid">
             <article v-for="(a, i) in v.artists" :key="i" class="lu-card" @click="openArtist(a)">
               <div class="lu-img-wrap">
