@@ -367,7 +367,7 @@ function backToTickets() {
             <img src="/konser1.jpg" alt="Silaturahmi Festival 2027" class="pi-event-img" />
             <div>
               <strong>SILATURAHMI FESTIVAL 2027</strong>
-              <small>23 May 2027</small>
+              <small>10 APRIL 2027</small>
             </div>
           </section>
 
