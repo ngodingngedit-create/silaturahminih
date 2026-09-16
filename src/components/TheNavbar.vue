@@ -1,13 +1,13 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import { EVENT_PATH, isTicketPagePath } from '../utils/eventRoute.js';
+import { TICKET_CATALOG_PATH, isTicketPagePath } from '../utils/eventRoute.js';
 
 const route = useRoute()
 const isScrolled = ref(false);
 const menuOpen = ref(false);
 const isTicketPage = computed(() => isTicketPagePath(route.path));
-const isEventActive = computed(() => route.path === EVENT_PATH || route.path.startsWith('/event/'));
+const isEventActive = computed(() => route.path === TICKET_CATALOG_PATH || route.path.startsWith('/event/'));
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50 || isTicketPage.value;
@@ -55,7 +55,7 @@ const navLinks = [
   { to: '/', label: 'BERANDA' },
   { to: '/lineup', label: 'PENAMPIL' },
   { href: MERCH_URL, label: 'MERCH' },
-  { to: EVENT_PATH, label: 'TIKET' },
+  { to: TICKET_CATALOG_PATH, label: 'TIKET' },
   { to: '/gallery', label: 'GALERI' },
 ]
 </script>
@@ -104,7 +104,7 @@ const navLinks = [
 
       <!-- Right: Desktop Actions -->
       <div class="nav-right">
-        <RouterLink :to="EVENT_PATH" class="btn btn-yellow nav-cta">
+        <RouterLink :to="TICKET_CATALOG_PATH" class="btn btn-yellow nav-cta">
           BELI TIKET
         </RouterLink>
 
@@ -150,7 +150,7 @@ const navLinks = [
           </RouterLink>
         </template>
         <RouterLink
-          :to="EVENT_PATH"
+          :to="TICKET_CATALOG_PATH"
           class="btn btn-yellow mm-cta"
           @click="closeMenu"
         >
@@ -170,7 +170,7 @@ const navLinks = [
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l12-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       <span>PENAMPIL</span>
     </RouterLink>
-    <RouterLink :to="EVENT_PATH" class="mb-item mb-ticket" :class="{ active: isEventActive }" aria-label="Tiket">
+    <RouterLink :to="TICKET_CATALOG_PATH" class="mb-item mb-ticket" :class="{ active: isEventActive }" aria-label="Tiket">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg>
       <span>TIKET</span>
     </RouterLink>

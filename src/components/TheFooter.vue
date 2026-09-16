@@ -118,7 +118,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { EVENT_PATH, isTicketPagePath } from '../utils/eventRoute.js'
+import { TICKET_CATALOG_PATH, isTicketPagePath } from '../utils/eventRoute.js'
 
 const route = useRoute()
 const isTicketPage = computed(() => isTicketPagePath(route.path))
@@ -127,7 +127,7 @@ const navLinks = [
   { to: '/', label: 'Beranda' },
   { to: '/lineup', label: 'Penampil' },
   { href: 'https://pasarbarengbareng.com/', label: 'Merch' },
-  { to: EVENT_PATH, label: 'Tiket' },
+  { to: TICKET_CATALOG_PATH, label: 'Tiket' },
   { to: '/gallery', label: 'Galeri' },
 ]
 

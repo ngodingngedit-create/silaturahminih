@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { EVENT_PATH } from '../utils/eventRoute.js'
+import { TICKET_CATALOG_PATH } from '../utils/eventRoute.js'
 const router = useRouter()
 </script>
 
@@ -20,7 +20,7 @@ const router = useRouter()
             <ul class="features">
             </ul>
           </div>
-          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">Lihat Detail Tiket</button>
+          <button class="btn btn-yellow" @click="router.push(TICKET_CATALOG_PATH)">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 2 -->
@@ -33,7 +33,7 @@ const router = useRouter()
             <ul class="features">
             </ul>
           </div>
-          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">Lihat Detail Tiket</button>
+          <button class="btn btn-yellow" @click="router.push(TICKET_CATALOG_PATH)">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 3 -->
@@ -46,7 +46,7 @@ const router = useRouter()
             <ul class="features">
             </ul>
           </div>
-          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">Lihat Detail Tiket</button>
+          <button class="btn btn-yellow" @click="router.push(TICKET_CATALOG_PATH)">Lihat Detail Tiket</button>
         </div>
 
         <!-- Card 4 -->
@@ -59,7 +59,7 @@ const router = useRouter()
             <ul class="features">
             </ul>
           </div>
-          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">Lihat Detail Tiket</button>
+          <button class="btn btn-yellow" @click="router.push(TICKET_CATALOG_PATH)">Lihat Detail Tiket</button>
         </div>
       </div>
     </div>

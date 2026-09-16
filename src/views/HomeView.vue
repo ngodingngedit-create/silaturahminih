@@ -7,7 +7,7 @@ import SpotifySection from '../components/SpotifySection.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { lineupVols } from '../data/lineup.js'
-import { EVENT_PATH } from '../utils/eventRoute.js'
+import { TICKET_CATALOG_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
@@ -275,7 +275,7 @@ const getSpotifySrc = (url) => {
           </div>
 
           <div class="tt-actions">
-            <button class="btn btn-pink btn-glitch" @click="router.push(EVENT_PATH)">
+            <button class="btn btn-pink btn-glitch" @click="router.push(TICKET_CATALOG_PATH)">
               LIHAT INFO TIKET 
               <span class="arrow">→</span>
             </button>

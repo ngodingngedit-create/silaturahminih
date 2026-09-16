@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { EVENT_PATH } from '../utils/eventRoute.js'
+import { TICKET_CATALOG_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
@@ -67,7 +67,7 @@ onUnmounted(() => stopAutoplay())
         </div>
 
         <div class="hero-actions">
-          <button class="btn btn-yellow" @click="router.push(EVENT_PATH)">BELI TIKET</button>
+          <button class="btn btn-yellow" @click="router.push(TICKET_CATALOG_PATH)">BELI TIKET</button>
           <button class="btn btn-white" @click="router.push('/lineup')">LIHAT PENAMPIL</button>
         </div>
       </div>
