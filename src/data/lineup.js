@@ -30,5 +30,15 @@ export const lineupVols = [
       { name: 'THIN ICE', image: '/lineUp/vol2/thinIce.webp', genre: 'Hardcore', stage: 'Main Stage', about: 'Hardcore dingin dan tajam.', spotify: 'https://open.spotify.com/embed/artist/2TrVJf2YlqPYpeUhYr3yqZ', social: { ig: 'thinice', youtube: 'thinice', tiktok: 'thinice' } },
     ]
   },
-  { id: 'vol3', label: 'VOL 3', open: false, coming: true, artists: [] },
+  { 
+    id: 'vol3', 
+    label: 'VOL 3', 
+    open: true, 
+    coming: false, 
+    artists: [
+      { name: 'THE CLOVES AND THE TOBACCO', image: '/lineUp/vol3/theclovesandthetobacco.webp', genre: 'Folk / Celtic Punk', stage: 'Main Stage', about: 'The Cloves and The Tobacco adalah band folk/celtic punk asal Bandung.', spotify: 'https://open.spotify.com/embed/artist/3vrNwMNse3qA0O6EEmy594', social: { ig: 'theclovesandthetobacco', youtube: 'theclovesandthetobacco', tiktok: 'theclovesandthetobacco' } },
+      { name: 'ALDY AMIS', image: '/lineUp/vol3/aldyamis.webp', genre: 'Indie / Folk', stage: 'Side Stage', about: 'Aldy Amis menghadirkan lantunan lagu akustik dan indie penuh cerita.', spotify: 'https://open.spotify.com/embed/artist/3vrNwMNse3qA0O6EEmy594', social: { ig: 'aldyamis', youtube: 'aldyamis', tiktok: 'aldyamis' } },
+      { name: 'DONKER', image: '/lineUp/vol3/donker.webp', genre: 'Punk', stage: 'Main Stage', about: 'Donker adalah band punk penuh energi asal Bandung.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm', social: { ig: 'dongker', youtube: 'dongker', tiktok: 'dongker' } }
+    ] 
+  },
 ]

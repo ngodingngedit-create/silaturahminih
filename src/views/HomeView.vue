@@ -7,7 +7,7 @@ import SpotifySection from '../components/SpotifySection.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { lineupVols } from '../data/lineup.js'
-import { TICKET_CATALOG_PATH } from '../utils/eventRoute.js'
+import { EVENT_PATH } from '../utils/eventRoute.js'
 
 const router = useRouter()
 
@@ -125,52 +125,25 @@ const getSpotifySrc = (url) => {
 
   <!-- Lineup Teaser -->
   <section class="teaser-lineup">
-    <!-- Vol 2 -->
-    <div class="container">
-      <h2 class="teaser-title">SILATURAHMI <span class="accent">SEBELUMNYA</span></h2>
-    </div>
-
-    <div class="container full-bleed">
-      <div class="artist-scroller-container" 
-           @mouseenter="handleMouseEnter" 
-           @mouseleave="handleMouseLeave"
-           @touchstart="handleMouseEnter"
-           @touchend="handleMouseLeave">
-        
-        <div class="scroll-area left" :class="{ visible: isHovered }" @click.stop="scrollLeft">
-          <button class="scroll-btn">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+    <!-- Vol 3 Grouped as lu-phase-group -->
+    <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+      <h2 class="teaser-title" style="text-align: center; margin-bottom: 1.5rem;">SILATURAHMI <span class="accent">LINE UP</span></h2>
+      
+      <div class="lu-phase-group" style="width: auto; max-width: 100%; margin: 0 auto; display: inline-block;">
+        <div class="lu-phase-badge-wrapper">
+          <span class="lu-badge-fase-group">FASE 1</span>
         </div>
-
-        <div class="artist-track" ref="trackRef" @scroll="syncPos">
-          <div
-            v-for="(artist, i) in displayArtists"
-            :key="i"
-            class="artist-card"
-            @click="openModal(artist)"
-          >
-            <div class="artist-img-wrapper">
-              <img :src="artist.image" :alt="artist.name" class="artist-img" />
-              <div class="artist-overlay">
-                <h3 class="artist-name" :title="artist.name">{{ artist.name }}</h3>
+        <div class="lu-grid" style="overflow-x: auto; justify-content: flex-start; flex-wrap: nowrap; scrollbar-width: thin;">
+          <article v-for="(a, i) in (lineupVols.find(v => v.id === 'vol3')?.artists || [])" :key="i" class="lu-card" @click="router.push('/lineup')">
+            <div class="lu-img-wrap">
+              <img :src="a.image" :alt="a.name" loading="lazy" />
+              <div class="lu-overlay">
+                <div class="lu-name" :title="a.name">{{ a.name }}</div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="scroll-area right" :class="{ visible: isHovered }" @click.stop="scrollRight">
-          <button class="scroll-btn">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          </article>
         </div>
       </div>
-    </div>
-
-    <div class="container" style="text-align: center;">
-      <button class="btn btn-yellow" @click="router.push('/lineup')">
-        LIHAT SEMUA PENAMPIL
-      </button>
     </div>
 
     <!-- Vol 3 TBA -->
@@ -252,13 +225,13 @@ const getSpotifySrc = (url) => {
           <h2 class="teaser-title custom-hardcore-font">TIKET <span class="accent">TERSEDIA</span></h2>
           
           <div class="tt-prices">
-            <div class="price-box featured">
-              <span class="pb-label">EARLY BIRD</span>
+            <div class="price-box featured sold-out-card">
+              <span class="pb-label">EARLY BIRD <span class="badge-sold">SOLD OUT</span></span>
               <span class="pb-value">50.000</span>
             </div>
-            <div class="price-box upcoming">
+            <div class="price-box featured">
               <span class="pb-label">PRESALE 1</span>
-              <span class="pb-value">SEGERA</span>
+              <span class="pb-value">70.000</span>
             </div>
             <div class="price-box upcoming">
               <span class="pb-label">PRESALE 2</span>
@@ -275,7 +248,7 @@ const getSpotifySrc = (url) => {
           </div>
 
           <div class="tt-actions">
-            <button class="btn btn-pink btn-glitch" @click="router.push(TICKET_CATALOG_PATH)">
+            <button class="btn btn-pink btn-glitch" @click="router.push(EVENT_PATH)">
               LIHAT INFO TIKET 
               <span class="arrow">→</span>
             </button>
@@ -284,7 +257,7 @@ const getSpotifySrc = (url) => {
         
         <div class="tt-visual">
           <div class="date-card coming-soon-mode">
-            <div class="big-date-hype custom-hardcore-font">STAY<br>TUNED</div>
+            <div class="big-date-hype custom-hardcore-font">PAMULANG<br>SQUARE</div>
             <div class="venue-tag hype-tag">
               <span class="loc-icon"></span> 10 APRIL 2027
             </div>
@@ -382,6 +355,99 @@ section {
 /* ---- Lineup Teaser (Sticker Style) ---- */
 .teaser-lineup {
   background: var(--color-black);
+  padding: 4rem 0;
+}
+
+.lu-phase-group {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 1.5rem 1rem 1rem;
+  margin-top: 1rem;
+  background: rgba(255,255,255,0.02);
+}
+
+.lu-phase-badge-wrapper {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+.lu-badge-fase-group {
+  background: var(--color-primary);
+  color: var(--color-black);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.lu-grid {
+  display: flex;
+  gap: 1.2rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.lu-card {
+  flex: 0 0 200px;
+  width: 200px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.lu-img-wrap {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #111;
+}
+
+.lu-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.lu-card:hover .lu-img-wrap img {
+  transform: scale(1.05);
+}
+
+.lu-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.6rem 0.9rem 0.9rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.25) 65%, transparent);
+  text-align: left;
+}
+
+.lu-name {
+  font-family: var(--font-heading);
+  color: #fff;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .full-bleed {
@@ -545,6 +611,7 @@ section {
 
 .ticket-container {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
   gap: 0;
   background: var(--color-dark-surface);
@@ -558,33 +625,35 @@ section {
   overflow: hidden;
 }
 
-/* Punch holes improved */
+/* Punch holes removed for vertical layout */
 .ticket-container::after,
 .ticket-container::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 30px;
-  height: 30px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-  box-shadow: 
-    0 0 0 4px var(--color-dark-surface),
-    inset 0 0 10px rgba(0,0,0,0.3);
+  display: none;
 }
-
-.ticket-container::after { left: -15px; }
-.ticket-container::before { right: -15px; }
 
 .tt-content { 
   flex: 1; 
   min-width: 0;
   overflow: hidden;
   padding: 4rem;
-  border-right: 2px dashed rgba(255,255,255,0.1);
+  border-right: none;
+  border-bottom: 2px dashed rgba(255,255,255,0.1);
   position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tt-visual {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  padding: 3rem;
+  position: relative;
+  border-top: none;
 }
 
 .custom-hardcore-font {
@@ -593,27 +662,10 @@ section {
 
 .tt-prices {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 1.25rem;
-  margin: 2.5rem 0;
-  padding-bottom: 0.8rem;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-.tt-prices::-webkit-scrollbar {
-  height: 4px;
-}
-
-.tt-prices::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-.tt-prices::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0;
+  width: 100%;
 }
 
 .price-box {
@@ -621,12 +673,13 @@ section {
   padding: 1.25rem 1rem;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-md);
-  flex: 0 0 160px;
-  min-width: 160px;
+  width: 100%;
+  min-width: 0;
   position: relative;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   overflow: hidden;
   cursor: pointer;
+  text-align: left;
 }
 
 /* Shimmer Light Sweep Effect */
@@ -656,8 +709,12 @@ section {
   background: linear-gradient(135deg, var(--color-secondary) 0%, #e84c3d 100%);
   border: none;
   box-shadow: 0 15px 35px rgba(232, 76, 61, 0.2);
-  transform: scale(1.05);
+  transform: none;
   z-index: 2;
+}
+
+.price-box.featured-p1 {
+  transform: none;
 }
 
 .price-box.featured::after {
@@ -720,13 +777,43 @@ section {
 
 .pb-value {
   font-family: var(--font-heading);
-  font-size: 1.8rem;
+  font-size: 2.8rem;
   display: block;
   line-height: 1;
 }
 
+.badge-sold {
+  background: var(--color-black);
+  color: #ff4d4d;
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .featured .pb-label { color: var(--color-white); opacity: 0.8; }
 .featured .pb-value { text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+
+.sold-out-card {
+  background: #232326 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  opacity: 0.7;
+  box-shadow: none !important;
+}
+
+.sold-out-card .pb-label {
+  color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+.sold-out-card .pb-value {
+  color: rgba(255, 255, 255, 0.5) !important;
+  text-shadow: none !important;
+}
 
 .hot-icon {
   display: inline-block;
@@ -1140,9 +1227,9 @@ section {
   .ticket-container::before { display: none; }
   .tt-content { padding: 1.75rem 1.25rem 1.5rem; border-right: none; border-bottom: 2px dashed rgba(255,255,255,0.1); }
   .teaser-ticket .teaser-sub { font-size: 0.95rem; margin-bottom: 0; }
-  .tt-prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin: 1.5rem 0; overflow: visible; padding-bottom: 0; }
-  .price-box { flex: none; min-width: 0; width: auto; padding: 1rem 0.75rem; scroll-snap-align: unset; }
-  .price-box.featured { grid-column: 1 / -1; transform: none; }
+  .tt-prices { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0; overflow: visible; padding-bottom: 0; }
+  .price-box { flex: none; min-width: 0; width: 100%; padding: 1rem 0.75rem; scroll-snap-align: unset; }
+  .price-box.featured { transform: none; }
   .pb-value { font-size: 1.4rem; }
   .tt-actions { margin-top: 0.25rem; }
   .tt-actions .btn { width: 100%; justify-content: center; }

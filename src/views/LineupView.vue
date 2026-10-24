@@ -58,15 +58,32 @@ function closeArtist() {
 
         <div v-show="v.open" class="lu-body">
           <div v-if="v.coming" class="lu-soon">SEGERA HADIR</div>
-          <div v-else class="lu-grid">
-            <article v-for="(a, i) in v.artists" :key="i" class="lu-card" @click="openArtist(a)">
-              <div class="lu-img-wrap">
-                <img :src="a.image" :alt="a.name" loading="lazy" />
-                <div class="lu-overlay">
-                  <div class="lu-name" :title="a.name">{{ a.name }}</div>
-                </div>
+          <div v-else class="lu-grid-wrapper">
+            <div v-if="v.id === 'vol3'" class="lu-phase-group">
+              <div class="lu-phase-badge-wrapper">
+                <span class="lu-badge-fase-group">FASE 1</span>
               </div>
-            </article>
+              <div class="lu-grid">
+                <article v-for="(a, i) in v.artists" :key="i" class="lu-card" @click="openArtist(a)">
+                  <div class="lu-img-wrap">
+                    <img :src="a.image" :alt="a.name" loading="lazy" />
+                    <div class="lu-overlay">
+                      <div class="lu-name" :title="a.name">{{ a.name }}</div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <div v-else class="lu-grid">
+              <article v-for="(a, i) in v.artists" :key="i" class="lu-card" @click="openArtist(a)">
+                <div class="lu-img-wrap">
+                  <img :src="a.image" :alt="a.name" loading="lazy" />
+                  <div class="lu-overlay">
+                    <div class="lu-name" :title="a.name">{{ a.name }}</div>
+                  </div>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </div>
@@ -152,6 +169,9 @@ function closeArtist() {
 .lu-grid::-webkit-scrollbar-thumb:hover { filter: brightness(1.1); }
 .lu-card { flex: 0 0 200px; scroll-snap-align: start; background: none; border: none; cursor: pointer; }
 .lu-img-wrap { position: relative; aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; background: #111; }
+.lu-phase-group { display: inline-block; max-width: 100%; position: relative; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1.2rem 1rem 0.8rem; margin-top: 0.5rem; background: rgba(255,255,255,0.02); }
+.lu-phase-badge-wrapper { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 3; }
+.lu-badge-fase-group { background: var(--color-primary); color: var(--color-black); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.15em; padding: 0.3rem 0.9rem; border-radius: 999px; font-family: var(--font-body); text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 .lu-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
 .lu-card:hover .lu-img-wrap img { transform: scale(1.05); }
 .lu-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.6rem 0.9rem 0.9rem; background: linear-gradient(to top, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.25) 65%, transparent); text-align: left; }

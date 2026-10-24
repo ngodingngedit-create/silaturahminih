@@ -36,10 +36,10 @@ const eventTimeLabel = computed(() => {
   const end = eventData.value.endTime ? ` - ${eventData.value.endTime}` : ''
   return `${eventData.value.startTime}${end} ${eventData.value.zoneTime || 'WIB'}`
 })
-const eventVenueLabel = computed(() => 'SEGERA DIUMUMKAN')
-const eventMapUrl = computed(() => eventData.value?.locationMap || 'https://maps.google.com/?q=Gambir+Expo+Jakarta')
-const eventLocVenue = computed(() => 'SEGERA DIUMUMKAN')
-const eventLocCity = computed(() => 'SEGERA DIUMUMKAN')
+const eventVenueLabel = computed(() => 'Pamulang Square')
+const eventMapUrl = computed(() => 'https://maps.app.goo.gl/3ai27x2r89hTEsuY8')
+const eventLocVenue = computed(() => 'Pamulang Square')
+const eventLocCity = computed(() => 'Pamulang Square')
 const organizerName = computed(() => (eventData.value?.organizer || 'SILATURAHMI PRESENTS').toUpperCase())
 const organizerImage = computed(() => '/logobarengbareng.webp')
 const maxBuyTicket = computed(() => eventData.value?.maxBuyTicket || 10)
