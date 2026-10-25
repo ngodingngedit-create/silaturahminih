@@ -104,7 +104,7 @@ const navLinks = [
 
       <!-- Right: Desktop Actions -->
       <div class="nav-right">
-        <RouterLink :to="EVENT_PATH" class="btn btn-yellow nav-cta">
+        <RouterLink :to="{ path: EVENT_PATH, query: { tab: 'tickets' } }" class="btn btn-yellow nav-cta">
           BELI TIKET
         </RouterLink>
 
@@ -150,7 +150,7 @@ const navLinks = [
           </RouterLink>
         </template>
         <RouterLink
-          :to="EVENT_PATH"
+          :to="{ path: EVENT_PATH, query: { tab: 'tickets' } }"
           class="btn btn-yellow mm-cta"
           @click="closeMenu"
         >
