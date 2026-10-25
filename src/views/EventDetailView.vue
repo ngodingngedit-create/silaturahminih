@@ -260,6 +260,9 @@ onMounted(() => {
   window.addEventListener('resize', checkTitleOverflow)
   document.body.classList.toggle('cart-sheet-open', showCartSheet.value)
   if (showCartSheet.value) document.body.style.overflow = 'hidden'
+  if (route.query.tab === 'tickets' || route.hash === '#tickets') {
+    scrollToSection('tickets')
+  }
 })
 
 onUnmounted(() => {

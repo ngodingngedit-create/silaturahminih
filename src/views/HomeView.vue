@@ -225,23 +225,23 @@ const getSpotifySrc = (url) => {
           <h2 class="teaser-title custom-hardcore-font">TIKET <span class="accent">TERSEDIA</span></h2>
           
           <div class="tt-prices">
-            <div class="price-box featured sold-out-card">
+            <div class="price-box featured sold-out-card" @click="router.push({ path: EVENT_PATH, query: { tab: 'tickets' } })">
               <span class="pb-label">EARLY BIRD <span class="badge-sold">SOLD OUT</span></span>
               <span class="pb-value">50.000</span>
             </div>
-            <div class="price-box featured">
+            <div class="price-box featured" @click="router.push({ path: EVENT_PATH, query: { tab: 'tickets' } })">
               <span class="pb-label">PRESALE 1</span>
               <span class="pb-value">70.000</span>
             </div>
-            <div class="price-box upcoming">
+            <div class="price-box upcoming" @click="router.push({ path: EVENT_PATH, query: { tab: 'tickets' } })">
               <span class="pb-label">PRESALE 2</span>
               <span class="pb-value">SEGERA</span>
             </div>
-            <div class="price-box upcoming">
+            <div class="price-box upcoming" @click="router.push({ path: EVENT_PATH, query: { tab: 'tickets' } })">
               <span class="pb-label">PRESALE 3</span>
               <span class="pb-value">SEGERA</span>
             </div>
-            <div class="price-box upcoming-accent">
+            <div class="price-box upcoming-accent" @click="router.push({ path: EVENT_PATH, query: { tab: 'tickets' } })">
               <span class="pb-label">REGULER</span>
               <span class="pb-value">SEGERA</span>
             </div>

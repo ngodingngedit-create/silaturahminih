@@ -36,9 +36,9 @@ export const lineupVols = [
     open: true, 
     coming: false, 
     artists: [
-      { name: 'THE CLOVES AND THE TOBACCO', image: '/lineUp/vol3/theclovesandthetobacco.webp', genre: 'Folk / Celtic Punk', stage: 'Main Stage', about: 'The Cloves and The Tobacco adalah band folk/celtic punk asal Bandung.', spotify: 'https://open.spotify.com/embed/artist/3vrNwMNse3qA0O6EEmy594', social: { ig: 'theclovesandthetobacco', youtube: 'theclovesandthetobacco', tiktok: 'theclovesandthetobacco' } },
-      { name: 'ALDY AMIS', image: '/lineUp/vol3/aldyamis.webp', genre: 'Indie / Folk', stage: 'Side Stage', about: 'Aldy Amis menghadirkan lantunan lagu akustik dan indie penuh cerita.', spotify: 'https://open.spotify.com/embed/artist/3vrNwMNse3qA0O6EEmy594', social: { ig: 'aldyamis', youtube: 'aldyamis', tiktok: 'aldyamis' } },
-      { name: 'DONKER', image: '/lineUp/vol3/donker.webp', genre: 'Punk', stage: 'Main Stage', about: 'Donker adalah band punk penuh energi asal Bandung.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm', social: { ig: 'dongker', youtube: 'dongker', tiktok: 'dongker' } }
+      { name: 'THE CLOVES AND THE TOBACCO', image: '/lineUp/vol3/theclovesandthetobacco.webp', genre: 'Folk / Celtic Punk', stage: 'Main Stage', about: 'The Cloves and The Tobacco adalah band folk/celtic punk asal Yogyakarta.', spotify: 'https://open.spotify.com/embed/artist/4crdSQQGMoZbJuX3IKJIqV?utm_source=generator&si=3e3e7ae85ecd4ac5', social: { ig: 'theclovesandthetobacco', youtube: 'theclovesandthetobacco', tiktok: 'theclovesandthetobacco' } },
+      { name: 'ALDY AMIS', image: '/lineUp/vol3/aldyamis.webp', genre: 'Indie / Folk', stage: 'Side Stage', about: 'Aldy Amis menghadirkan lantunan lagu akustik dan indie penuh cerita.', spotify: 'https://open.spotify.com/embed/artist/1cH4Kfu1QYyTnmAgEt1j8V?utm_source=generator&si=32c2fb50da5148fa', social: { ig: 'aldyamis', youtube: 'aldyamis', tiktok: 'aldyamis' } },
+      { name: 'DONGKER', image: '/lineUp/vol3/donker.webp', genre: 'Punk', stage: 'Main Stage', about: 'Donker adalah band punk penuh energi asal Bandung.', spotify: 'https://open.spotify.com/embed/artist/6sf1OnuDZM48bgFQvPkbYm', social: { ig: 'dongker', youtube: 'dongker', tiktok: 'dongker' } }
     ] 
   },
 ]
